@@ -6,6 +6,19 @@ FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), size_t* a1, bo
 
 size_t* sonicContextPtr = nullptr;
 
+void Transfo_CheckInput(size_t* SonicContext)
+{
+	if (GetKeyState('S') & 0x8000) 
+	{
+		TriggerSuperSonic(SonicContext, true);
+	}
+
+	if (GetKeyState('Z') & 0x8000) //detransfo
+	{
+		TriggerSuperSonic(SonicContext, false);
+	}
+}
+
 //we hack the function that manage MSG for Sonic as we need the SonicContext instance to call Super Sonic
 HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), size_t* SonicContext, __int64 a2, __int64 a3)
 {
@@ -13,15 +26,7 @@ HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), size_t* S
 	PrintInfo("cur Action: %d", curAction);
 	sonicContextPtr = SonicContext;
 
-	if (GetKeyState('S') & 0x8000)
-	{
-		TriggerSuperSonic(SonicContext, true);
-	}
-
-	if (GetKeyState('Z') & 0x8000)
-	{
-		TriggerSuperSonic(SonicContext, false);
-	}
+	Transfo_CheckInput(SonicContext);
 
 	return originalPlayerStateProcessMSG_r(SonicContext, a2, a3);
 }

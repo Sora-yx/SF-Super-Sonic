@@ -5,11 +5,13 @@ extern "C" {
 
 	__declspec(dllexport) void Init()
 	{
-        const INIReader reader("config.ini");
+		if (!sigValid)
+		{
+			MessageBox(nullptr, TEXT("Unsupported game version.\n"), TEXT("Super Sonic Mod"), MB_ICONERROR);
+			return;
+		}
 
-        if (reader.ParseError() != 0)
-            PrintInfo(("Cannot load configuration file, mod won't work.\n"));
-
+		initConfig();
 		init_SuperSonicHacks();
         //WRITE_MEMORY(0x000000, uint8_t, 0x2)//
 	}

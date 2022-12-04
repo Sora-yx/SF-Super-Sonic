@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="Frontiers-util.h" />
+    <ClInclude Include="mod.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="sigscans.h" />
     <ClInclude Include="ss.h" />

@@ -25,5 +25,6 @@
 #include "Frontiers-util.h"
 #include "util.h"
 #include "sigscans.h"
+#include "mod.h"
 
 #endif //PCH_H
