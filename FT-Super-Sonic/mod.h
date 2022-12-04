@@ -1,5 +1,8 @@
 #pragma once
 
-void initConfig();
 
-extern bool limit;
+extern bool nolimit;
+
+void initConfig();
+void init_Audio();
+

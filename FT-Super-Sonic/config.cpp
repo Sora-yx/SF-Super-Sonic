@@ -1,6 +1,6 @@
 #include "pch.h"
 
-bool limit = true;
+bool nolimit = false;
 
 void initConfig()
 {
@@ -12,6 +12,7 @@ void initConfig()
         return;
     }
 
-    limit = reader.GetBoolean("Mod", "limit", limit);
+    nolimit = reader.GetBoolean("Mod", "nolimit", nolimit);
+    nolimit = nolimit;
 
 }

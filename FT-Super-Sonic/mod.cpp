@@ -18,6 +18,6 @@ extern "C" {
 
 	__declspec(dllexport) void __cdecl OnFrame()
 	{
-
+		SuperSonic_OnFrames(sonicContextPtr);
 	}
 }
