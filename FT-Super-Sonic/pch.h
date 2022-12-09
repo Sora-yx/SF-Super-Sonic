@@ -22,9 +22,9 @@
 #include <Helpers.h>
 #include <SigScan.h>
 
+#include "sigscans.h"
 #include "Frontiers-util.h"
 #include "util.h"
-#include "sigscans.h"
 #include "mod.h"
 
 #endif //PCH_H

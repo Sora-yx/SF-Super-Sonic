@@ -23,3 +23,19 @@ SIG_SCAN
 	"\xE8\xCC\xCC\xCC\xCC\x44\x8B\x6D\x67", 
 	"x????xxxx"
 )
+
+SIG_SCAN
+(
+	sigGetRings,
+	0x140798CE0,
+	"\x48\x8B\x41\x30\x8B\x40\x28", 
+	"xxxxxxx"
+)
+
+SIG_SCAN
+(
+	sigSubRings,
+	0x140799740,
+	"\x4C\x8B\x49\x30\x44", 
+	"xxxxx"
+)
