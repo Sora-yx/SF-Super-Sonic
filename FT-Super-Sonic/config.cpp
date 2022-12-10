@@ -13,6 +13,5 @@ void initConfig()
     }
 
     nolimit = reader.GetBoolean("Mod", "nolimit", nolimit);
-    nolimit = nolimit;
 
 }
