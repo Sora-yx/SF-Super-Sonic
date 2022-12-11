@@ -1,6 +1,6 @@
 #pragma once
 
-struct Sonic
+struct __declspec(align(0x10)) Sonic
 {
 	__int16 field_0;
 	char gap2[70];
@@ -15,13 +15,12 @@ struct Sonic
 	char field_6C[100];
 };
 
-struct __declspec(align(16)) BlackboardStatus
+struct __declspec(align(0x10)) BlackboardStatus
 {
 	__int64 field[5];
 	unsigned int SuperSonic;
 	__int64 field2[42];
 };
-
 
 struct SonicContext
 {
@@ -68,7 +67,6 @@ struct SSEffAuraS
 	__int64 field2[60];
 };
 
-
 struct _declspec(align(8)) StateFly
 {
 	char field_10[388];
@@ -81,12 +79,12 @@ struct Message
 	__int64 field2[20];
 };
 
-
-
+//Used for research atm, todo: delete when mod is done.
 FUNCTION_PTR(size_t, __fastcall, sub_140b8a8d0, 0x140b8a8d0, size_t* a1);
-
-
 FUNCTION_PTR(__int64, __fastcall, sub_14086C710, 0x14086C710, SonicContext* a1, __int64 a2);
-
 FUNCTION_PTR(void, __fastcall, sub_14079C720, 0x14079C720, __int64 a1, __int64 a2);
 FUNCTION_PTR(char, __fastcall, sub_1407EFB20, 0x1407EFB20, SonicContext* SonicCOntext, __int64 a2, __int64 a3);
+FUNCTION_PTR(void, __fastcall, SetNextAnim, 0x1407A7710, __int64 a1, const char* action, unsigned __int8 a3);
+FUNCTION_PTR(void, __fastcall, SetAura, 0x14078EFD0, __int64 a1, bool a2);
+FUNCTION_PTR(char**, __cdecl, Gocplayereffect, 0x14078F590, void);
+FUNCTION_PTR(Sonic*, __fastcall, GetPSonic, 0x1401F22D0, SonicContext* a1);

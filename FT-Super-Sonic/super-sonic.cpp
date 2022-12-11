@@ -5,16 +5,8 @@
 FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
 FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
 FUNCTION_PTR(void, __fastcall, SubRing, sigSubRings(), SonicContext* sContext, int count);
-FUNCTION_PTR(void, __fastcall, SetNextAnim, 0x1407A7710, __int64 a1, const char* action, unsigned __int8 a3);
-FUNCTION_PTR(void, __fastcall, SetAura, 0x14078EFD0, __int64 a1, bool a2);
-FUNCTION_PTR(char**, __cdecl, Gocplayereffect, 0x14078F590, void);
-FUNCTION_PTR(Sonic*, __fastcall, GetPSonic, 0x1401F22D0, SonicContext* a1);
-FUNCTION_PTR(__int64, __fastcall, sub_140B8B120, 0x140B8B120, Sonic* a1, __int64 a2);
-FUNCTION_PTR(void*, __cdecl, sub_1407A8490, 0x1407A8490, void);
-FUNCTION_PTR(char, __fastcall, SetSonicFall, 0x14086EC50, SonicContext* a1, char a2);
-FUNCTION_PTR(__int64, __fastcall, sub_14078F7E0, 0x14078F7E0, __int64 a1, __int64 id);
-FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x140798A50, SonicContext* Sonk, __int64 actionID, __int64 a3);
-FUNCTION_PTR(char, __fastcall, sub_140865810, 0x140865810, SonicContext* a1);
+FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
+FUNCTION_PTR(char, __fastcall, ChangeStateParameter, sigChangeStateParameter(), SonicContext* Sonk, __int64 actionID, __int64 a3);
 
 SonicContext* sonicContextPtr = nullptr;
 SSEffAuraS* auraPtr = nullptr;
@@ -84,7 +76,6 @@ void ringLoss(SonicContext* SContext)
 		ringTimer = 0;
 		return;
 	}
-
 }
 
 void SuperSonic_OnFrames(SonicContext* SContext)
@@ -104,14 +95,7 @@ void RemoveRings(SonicContext* SContext)
 void changeSSMusic();
 
 //we hack the function that manage MSG for Sonic as we need the SonicContext instance to call Super Sonic
-HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), SonicContext* SContext, __int64 a2, __int64 a3)
-{
-	sonicContextPtr = SContext;
-	return originalPlayerStateProcessMSG_r(SContext, a2, a3);
-}
-
-
-HOOK(__int64, __fastcall, ChangeStateParameter_r, 0x140798A50, __int64 a1, __int64 a2, __int64 a3)
+HOOK(__int64, __fastcall, ChangeStateParameter_r, sigChangeStateParameter(), __int64 a1, __int64 a2, __int64 a3)
 {
 	PrintInfo("Set New Stage Param: %d\n", a2);
 	return originalChangeStateParameter_r(a1, a2, a3);
@@ -127,15 +111,15 @@ HOOK(char, __fastcall, SetSuperSonicNextAction_r, 0x14086EE40, SonicContext* a1,
 	return originalSetSuperSonicNextAction_r(a1, a2, a3);
 }
 
-HOOK(bool, __fastcall, isSuperSonic_r, 0x140798FF0, SonicContext* pSonic)
+HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
 {
-	isSuper = originalisSuperSonic_r(pSonic);
+	sonicContextPtr = sCont;
+	isSuper = originalisSuperSonic_r(sCont);
 	return isSuper;
 }
 
 void init_SuperSonicHacks()
 {
-	INSTALL_HOOK(PlayerStateProcessMSG_r);
 	INSTALL_HOOK(ChangeStateParameter_r);
 	INSTALL_HOOK(SetSuperSonicNextAction_r);
 	INSTALL_HOOK(isSuperSonic_r);
