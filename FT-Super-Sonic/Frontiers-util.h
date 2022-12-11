@@ -15,6 +15,14 @@ struct Sonic
 	char field_6C[100];
 };
 
+struct __declspec(align(16)) BlackboardStatus
+{
+	__int64 field[5];
+	unsigned int SuperSonic;
+	__int64 field2[42];
+};
+
+
 struct SonicContext
 {
 	__int64 field_0;
@@ -22,7 +30,7 @@ struct SonicContext
 	__int64 field_10;
 	__int64 field_18;
 	Sonic* pSonic;
-	__int64 pBlackBoardStatus;
+	BlackboardStatus* pBlackBoardStatus;
 	__int64 field_30;
 	__int64 pGOCPlayerHsm;
 	__int64 field_40;
@@ -49,6 +57,30 @@ struct __declspec(align(4)) StatePluginBossBattle
 	SonicContext* pSonicContext;
 	int field_50;
 };
+
+struct SSEffAuraS
+{
+	void* PEffectVfTable;
+	__int64 field0[2];
+	Sonic* Sonk;
+	__int64 field1[4];
+	__int64 AuraFlagMaybe;
+	__int64 field2[60];
+};
+
+
+struct _declspec(align(8)) StateFly
+{
+	char field_10[388];
+};
+
+struct Message
+{
+	__int64 field;
+	__int64 msgID;
+	__int64 field2[20];
+};
+
 
 
 FUNCTION_PTR(size_t, __fastcall, sub_140b8a8d0, 0x140b8a8d0, size_t* a1);
