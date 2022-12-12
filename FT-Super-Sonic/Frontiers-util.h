@@ -13,6 +13,7 @@ struct __declspec(align(0x10)) Sonic
 	char gap61[6];
 	char field_67[5];
 	char field_6C[100];
+	char field_7c[541];
 };
 
 struct __declspec(align(0x10)) BlackboardStatus

@@ -15,6 +15,19 @@ bool isSuper = false;
 bool transfoAllowed = false;
 char statusBackup[0x180] = { 0 };
 
+HOOK(WORD*, __fastcall, SonicVisualConstructor_r, 0x14BE68FC0, WORD* a1, size_t* a2, Sonic* a3, size_t* a4)
+{
+	return originalSonicVisualConstructor_r(a1, a2, a3, a4);
+}
+
+//we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
+HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
+{
+	sonicContextPtr = sCont;
+	isSuper = originalisSuperSonic_r(sCont);
+	return isSuper;
+}
+
 HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura, 0x140783CE0, SSEffAuraS* ptrSSAura, __int64 a2, Sonic* Sonk, __int64 a4)
 {
 	auraPtr = originalSuperSonicEffectAura(ptrSSAura, a2, Sonk, a4);
@@ -94,7 +107,6 @@ void RemoveRings(SonicContext* SContext)
 
 void changeSSMusic();
 
-//we hack the function that manage MSG for Sonic as we need the SonicContext instance to call Super Sonic
 HOOK(__int64, __fastcall, ChangeStateParameter_r, sigChangeStateParameter(), __int64 a1, __int64 a2, __int64 a3)
 {
 	PrintInfo("Set New Stage Param: %d\n", a2);
@@ -111,11 +123,9 @@ HOOK(char, __fastcall, SetSuperSonicNextAction_r, 0x14086EE40, SonicContext* a1,
 	return originalSetSuperSonicNextAction_r(a1, a2, a3);
 }
 
-HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
+HOOK(void, __fastcall, SetNextAnim_r, 0x1407A7710, __int64 a1, const char* anim, unsigned __int8 a3)
 {
-	sonicContextPtr = sCont;
-	isSuper = originalisSuperSonic_r(sCont);
-	return isSuper;
+	return originalSetNextAnim_r(a1, anim, a3);
 }
 
 void init_SuperSonicHacks()
@@ -124,4 +134,8 @@ void init_SuperSonicHacks()
 	INSTALL_HOOK(SetSuperSonicNextAction_r);
 	INSTALL_HOOK(isSuperSonic_r);
 	INSTALL_HOOK(SuperSonicEffectAura);
+	INSTALL_HOOK(SetNextAnim_r);
+	INSTALL_HOOK(SonicVisualConstructor_r);
+
+	WRITE_NOP(0x14077BEBE, 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 }
