@@ -80,6 +80,20 @@ struct Message
 	__int64 field2[20];
 };
 
+
+struct StatePlay
+{
+	void* GameModeStatePlay;
+	int field_0[19];
+};
+
+struct CyberStatePlay
+{
+	void* CyberStatePlay;
+	int field_0[15];
+};
+
+
 //Used for research atm, todo: delete when mod is done.
 FUNCTION_PTR(size_t, __fastcall, sub_140b8a8d0, 0x140b8a8d0, size_t* a1);
 FUNCTION_PTR(__int64, __fastcall, sub_14086C710, 0x14086C710, SonicContext* a1, __int64 a2);

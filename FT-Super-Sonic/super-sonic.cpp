@@ -15,11 +15,6 @@ bool isSuper = false;
 bool transfoAllowed = false;
 char statusBackup[0x180] = { 0 };
 
-HOOK(WORD*, __fastcall, SonicVisualConstructor_r, 0x14BE68FC0, WORD* a1, size_t* a2, Sonic* a3, size_t* a4)
-{
-	return originalSonicVisualConstructor_r(a1, a2, a3, a4);
-}
-
 //we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
 HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
 {
@@ -93,7 +88,7 @@ void ringLoss(SonicContext* SContext)
 
 void SuperSonic_OnFrames(SonicContext* SContext)
 {
-	if (!SContext || !SContext->pSonic)
+	if (!isInGame() || !SContext || !SContext->pSonic)
 		return;
 
 	Transfo_CheckInput(SContext);
@@ -128,14 +123,15 @@ HOOK(void, __fastcall, SetNextAnim_r, 0x1407A7710, __int64 a1, const char* anim,
 	return originalSetNextAnim_r(a1, anim, a3);
 }
 
+
 void init_SuperSonicHacks()
 {
+	INSTALL_HOOK(isSuperSonic_r);
+	WRITE_NOP(sigIsNotCyberSpace(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
+
+	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
 	INSTALL_HOOK(SetSuperSonicNextAction_r);
-	INSTALL_HOOK(isSuperSonic_r);
 	INSTALL_HOOK(SuperSonicEffectAura);
 	INSTALL_HOOK(SetNextAnim_r);
-	INSTALL_HOOK(SonicVisualConstructor_r);
-
-	WRITE_NOP(0x14077BEBE, 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 }

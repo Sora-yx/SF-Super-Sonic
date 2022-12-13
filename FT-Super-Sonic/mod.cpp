@@ -13,6 +13,7 @@ extern "C" {
 
 		initConfig();
 		init_SuperSonicHacks();
+		init_Util();
         //WRITE_MEMORY(0x000000, uint8_t, 0x2)//
 	}
 
