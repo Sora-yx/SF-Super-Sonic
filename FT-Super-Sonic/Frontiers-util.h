@@ -58,6 +58,26 @@ struct __declspec(align(4)) StatePluginBossBattle
 	int field_50;
 };
 
+struct StructAB
+{
+	__int16 field_0;
+	char gap2[70];
+	char field_48;
+	char gap49[15];
+	char pComponents;
+	char gap59[4];
+	char field_5D;
+	__declspec(align(4)) char field_60;
+	char gap61[6];
+	char field_67[5];
+	char field_6C[100];
+	int idk;
+	float spdY;
+	float spd3;
+	char field_7c[541];
+};
+
+
 struct SSEffAuraS
 {
 	void* PEffectVfTable;
@@ -93,6 +113,18 @@ struct CyberStatePlay
 	int field_0[15];
 };
 
+
+
+static FUNCTION_PTR(void, __fastcall, SubRing, sigSubRings(), SonicContext* sContext, int count);
+
+namespace app::player
+{
+
+	static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
+	static FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
+	static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
+	static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, sigChangeStateParameter(), SonicContext* Sonk, __int64 actionID, __int64 a3);
+}
 
 //Used for research atm, todo: delete when mod is done.
 FUNCTION_PTR(size_t, __fastcall, sub_140b8a8d0, 0x140b8a8d0, size_t* a1);

@@ -2,18 +2,16 @@
 
 //Big shoutout to Death for helping finding the proper function that trigger SS!!!
 
-FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
-FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
-FUNCTION_PTR(void, __fastcall, SubRing, sigSubRings(), SonicContext* sContext, int count);
-FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
-FUNCTION_PTR(char, __fastcall, ChangeStateParameter, sigChangeStateParameter(), SonicContext* Sonk, __int64 actionID, __int64 a3);
-
 SonicContext* sonicContextPtr = nullptr;
 SSEffAuraS* auraPtr = nullptr;
 static int ringTimer = 0;
 bool isSuper = false;
 bool transfoAllowed = false;
 char statusBackup[0x180] = { 0 };
+static StructAB* ab = nullptr;
+
+void changeSSMusic();
+
 
 //we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
 HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
@@ -31,11 +29,11 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura, 0x140783CE0, SSEffAuraS* ptr
 
 void Untransfo(SonicContext* SContext)
 {
-	TriggerSuperSonic(SContext, false);
+	app::player::TriggerSuperSonic(SContext, false);
 
-	if (!SetSonicFall(SContext, 0))
+	if (!app::player::SetSonicFall(SContext, 0))
 	{
-		ChangeStateParameter(SContext, 1, 1);
+		app::player::ChangeStateParameter(SContext, 1, 1);
 	}
 }
 
@@ -48,13 +46,13 @@ void Transfo_CheckInput(SonicContext* SContext)
 		return;
 	}
 
-	auto ring = GetRings(SContext);
+	auto ring = app::player::GetRings(SContext);
 
 	if (GetKeyState('Y') & 0x8000 && !isSuper && (nolimit || ring >= 50))
 	{
-		//changeSSMusic();
+		changeSSMusic();
 		memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));
-		TriggerSuperSonic(SContext, true);
+		app::player::TriggerSuperSonic(SContext, true);
 
 		if (auraPtr)
 			auraPtr->AuraFlagMaybe &= 1u;
@@ -68,7 +66,7 @@ void ringLoss(SonicContext* SContext)
 	if (nolimit || !isSuper)
 		return;
 
-	auto ring = GetRings(SContext);
+	auto ring = app::player::GetRings(SContext);
 
 	if (++ringTimer == 60)
 	{
@@ -86,13 +84,40 @@ void ringLoss(SonicContext* SContext)
 	}
 }
 
+
+void GainAltitude(StructAB* a)
+{
+	if (GetKeyState('W') & 0x8000)
+	{
+		a->spdY = 20.0f;
+	}
+}
+
+void LoseAltitude(StructAB* a)
+{
+	if (GetKeyState('X') & 0x8000)
+	{
+		a->spdY = -20.0f;
+	}
+}
+
 void SuperSonic_OnFrames(SonicContext* SContext)
 {
 	if (!isInGame() || !SContext || !SContext->pSonic)
 		return;
 
 	Transfo_CheckInput(SContext);
-	ringLoss(SContext);
+	if (isSuper)
+	{
+		ringLoss(SContext);
+
+		if (ab)
+		{
+			GainAltitude(ab);
+			LoseAltitude(ab);
+		}
+
+	}
 }
 
 void RemoveRings(SonicContext* SContext)
@@ -100,9 +125,7 @@ void RemoveRings(SonicContext* SContext)
 	SubRing(SContext, 1);
 }
 
-void changeSSMusic();
-
-HOOK(__int64, __fastcall, ChangeStateParameter_r, sigChangeStateParameter(), __int64 a1, __int64 a2, __int64 a3)
+HOOK(__int64, __fastcall, ChangeStateParameter_r, 0x140798A50, __int64 a1, __int64 a2, __int64 a3)
 {
 	PrintInfo("Set New Stage Param: %d\n", a2);
 	return originalChangeStateParameter_r(a1, a2, a3);
@@ -120,18 +143,50 @@ HOOK(char, __fastcall, SetSuperSonicNextAction_r, 0x14086EE40, SonicContext* a1,
 
 HOOK(void, __fastcall, SetNextAnim_r, 0x1407A7710, __int64 a1, const char* anim, unsigned __int8 a3)
 {
+	PrintInfo("Anim: %s\n", anim);
 	return originalSetNextAnim_r(a1, anim, a3);
+}
+
+HOOK(__int64, __fastcall, DoJump_r, 0x14B612AC0, __int64 a1, SonicContext* a2, int a3)
+{
+	return originalDoJump_r(a1, a2, a3);
+}
+
+int oldMsg = -1;
+HOOK(char, __fastcall, PlayerStateProcessMSG_r, 0x1407F3590, SonicContext* SContext, Message* a2, __int64 a3)
+{
+	auto id = a2->msgID;
+
+	if (id != oldMsg)
+	{
+		//PrintInfo("new msg: %d\n", id);
+		oldMsg = id;
+	}
+
+	return originalPlayerStateProcessMSG_r(SContext, a2, a3);
+}
+
+
+HOOK(void, __fastcall, ManageSpeed_r, sigsub_14079A1A0(), StructAB* a1, WORD* spd)
+{
+	ab = a1;
+	return originalManageSpeed_r(a1, spd);
 }
 
 
 void init_SuperSonicHacks()
 {
+
 	INSTALL_HOOK(isSuperSonic_r);
 	WRITE_NOP(sigIsNotCyberSpace(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
+	INSTALL_HOOK(ManageSpeed_r); //used to gain and lose altitude
 
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
 	INSTALL_HOOK(SetSuperSonicNextAction_r);
 	INSTALL_HOOK(SuperSonicEffectAura);
 	INSTALL_HOOK(SetNextAnim_r);
+	INSTALL_HOOK(DoJump_r);
+	INSTALL_HOOK(PlayerStateProcessMSG_r);
+
 }
