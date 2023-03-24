@@ -48,9 +48,14 @@ HOOK(__int64, __cdecl, EndCyberStatePlayMaybe_r, 0x14017AFF0, void)
 
 void init_Util()
 {
+
+
 	//Used to check if the game is on a state "playable", hopefully someday I'll find a more convenient way to do it, LOL
-	INSTALL_HOOK(GameModePlayStateConstructor_r);
 	INSTALL_HOOK(EndPlayStateMaybe_r);
+
+	return; //no sig scan since update 1.20
+	INSTALL_HOOK(GameModePlayStateConstructor_r);
+
 	INSTALL_HOOK(CyberStatePlayConstructor_r);
 	INSTALL_HOOK(EndCyberStatePlayMaybe_r);
 }

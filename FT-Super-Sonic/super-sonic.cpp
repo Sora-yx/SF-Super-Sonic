@@ -14,7 +14,8 @@ void changeSSMusic();
 
 
 //we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
-HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
+//
+HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(),  SonicContext* sCont)
 {
 	sonicContextPtr = sCont;
 	isSuper = originalisSuperSonic_r(sCont);
@@ -103,7 +104,8 @@ void LoseAltitude(StructAB* a)
 
 void SuperSonic_OnFrames(SonicContext* SContext)
 {
-	if (!isInGame() || !SContext || !SContext->pSonic)
+	//!isInGame() ||
+	if ( !SContext || !SContext->pSonic)
 		return;
 
 	Transfo_CheckInput(SContext);
@@ -125,35 +127,15 @@ void RemoveRings(SonicContext* SContext)
 	SubRing(SContext, 1);
 }
 
-HOOK(__int64, __fastcall, ChangeStateParameter_r, 0x140798A50, __int64 a1, __int64 a2, __int64 a3)
+HOOK(__int64, __fastcall, ChangeStateParameter_r, sigChangeStateParameter(), __int64 a1, __int64 a2, __int64 a3)
 {
 	PrintInfo("Set New Stage Param: %d\n", a2);
 	return originalChangeStateParameter_r(a1, a2, a3);
 }
 
-HOOK(StateFly*, __fastcall, PlayerStateFlyCOnstructor, 0x140821690, __int64 a1)
-{
-	return originalPlayerStateFlyCOnstructor(a1);
-}
-
-HOOK(char, __fastcall, SetSuperSonicNextAction_r, 0x14086EE40, SonicContext* a1, char a2, unsigned int a3)
-{
-	return originalSetSuperSonicNextAction_r(a1, a2, a3);
-}
-
-HOOK(void, __fastcall, SetNextAnim_r, 0x1407A7710, __int64 a1, const char* anim, unsigned __int8 a3)
-{
-	PrintInfo("Anim: %s\n", anim);
-	return originalSetNextAnim_r(a1, anim, a3);
-}
-
-HOOK(__int64, __fastcall, DoJump_r, 0x14B612AC0, __int64 a1, SonicContext* a2, int a3)
-{
-	return originalDoJump_r(a1, a2, a3);
-}
 
 int oldMsg = -1;
-HOOK(char, __fastcall, PlayerStateProcessMSG_r, 0x1407F3590, SonicContext* SContext, Message* a2, __int64 a3)
+HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), SonicContext* SContext, Message* a2, __int64 a3)
 {
 	auto id = a2->msgID;
 
@@ -166,8 +148,7 @@ HOOK(char, __fastcall, PlayerStateProcessMSG_r, 0x1407F3590, SonicContext* SCont
 	return originalPlayerStateProcessMSG_r(SContext, a2, a3);
 }
 
-
-HOOK(void, __fastcall, ManageSpeed_r, sigsub_14079A1A0(), StructAB* a1, WORD* spd)
+HOOK(void, __fastcall, ManageSpeed_r, sigsub_setVSpeedBump(), StructAB* a1, WORD* spd)
 {
 	ab = a1;
 	return originalManageSpeed_r(a1, spd);
@@ -178,15 +159,14 @@ void init_SuperSonicHacks()
 {
 
 	INSTALL_HOOK(isSuperSonic_r);
-	WRITE_NOP(sigIsNotCyberSpace(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
+	//sigIsNotCyberSpace()
+	WRITE_NOP(0x14079BB8B, 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
+
 	INSTALL_HOOK(ManageSpeed_r); //used to gain and lose altitude
 
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
-	INSTALL_HOOK(SetSuperSonicNextAction_r);
-	INSTALL_HOOK(SuperSonicEffectAura);
-	INSTALL_HOOK(SetNextAnim_r);
-	INSTALL_HOOK(DoJump_r);
+	//INSTALL_HOOK(SuperSonicEffectAura);
 	INSTALL_HOOK(PlayerStateProcessMSG_r);
 
 }
