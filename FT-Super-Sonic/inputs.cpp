@@ -4,6 +4,7 @@
 #pragma comment(lib, "XInput.lib") /// Library containing necessary 360
 
 extern int inputDelay;
+static const uint8_t delay = 15;
 
 bool isInputPressed(const int input)
 {
@@ -21,7 +22,7 @@ bool isInputPressed(const int input)
             // Controller is connected
             if (state.Gamepad.wButtons & input)
             {
-                inputDelay = 30;
+                inputDelay = delay;
                 return true;
             }
         }
@@ -35,7 +36,7 @@ bool isKeyPressed(char key)
 {
     if (GetKeyState(key) & 0x8000)
     {
-        inputDelay = 30;
+        inputDelay = delay;
         return true;
     }
 }

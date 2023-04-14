@@ -16,13 +16,6 @@ SIG_SCAN
 	"xxxxxxxxxxxxxxxxx????x"
 )
 
-SIG_SCAN
-(
-	sigPlayMusic,
-	0x14088DDB0,
-	"\xE8\xCC\xCC\xCC\xCC\x44\x8B\x6D\x67",
-	"x????xxxx"
-)
 
 SIG_SCAN
 (
@@ -80,21 +73,6 @@ SIG_SCAN
 	"xxxxxxxxxxxxx"
 )
 
-SIG_SCAN
-(
-	sigsub_140A47540,
-	0x140A885B0,
-	"\xE8\xCC\xCC\xCC\xCC\x31\xC9\x45\x31\xC9", 
-	"x????xxxxx"
-)
-
-SIG_SCAN
-(
-	sigsub_setVSpeedBump,
-	0x1407BBF70,
-	"\x0F\x10\x81\xD0\x00\x00\x00\x0F\x58\x02", 
-	"xxxxxxxxxx"
-)
 
 SIG_SCAN
 (

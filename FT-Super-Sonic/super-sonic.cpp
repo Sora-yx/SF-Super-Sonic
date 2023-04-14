@@ -12,6 +12,7 @@ bool transfoAllowed = false;
 char statusBackup[0x180] = { 0 };
 static StructAB* ab = nullptr;
 int inputDelay = 0;
+size_t paramBackup = 0;
 
 //we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
 //
@@ -31,12 +32,6 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 void Untransfo(SonicContext* SContext)
 {
 	app::player::TriggerSuperSonic(SContext, false);
-
-	if (!app::player::SetSonicFall(SContext, 0))
-	{
-		app::player::ChangeStateParameter(SContext, 1, 1);
-	}
-
 }
 
 void PlayMusic();
@@ -50,12 +45,16 @@ void Transfo_CheckInput(SonicContext* SContext)
 
 	if ((isKeyPressed(UntransformKey) || isInputPressed(UntransformBtn)) && isSuper) //detransfo
 	{
+		if (!app::player::SetSonicFall(SContext, 0))
+			return;
+
 		if (auraPtr)
 		{
 			app::player::SSAuraDestructor(auraPtr);
 		}
 
 		Untransfo(SContext);
+		memcpy(&SContext->pGOCPlayerKinematicPrams, &paramBackup, sizeof(size_t));
 		memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
 		return;
 	}
@@ -66,12 +65,12 @@ void Transfo_CheckInput(SonicContext* SContext)
 		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper && (nolimit || ring >= 50))
 		{
 			//PlayMusic();
+			//app::player::ChangeStateParameter(SContext, 1, 1);
+			memcpy(&paramBackup, &SContext->pGOCPlayerKinematicPrams, sizeof(size_t));
 			memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));
 			app::player::TriggerSuperSonic(SContext, true);
-
-
-
 			return;
+
 		}
 	}
 }
@@ -167,4 +166,6 @@ void init_SuperSonicHacks()
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
 	INSTALL_HOOK(PlayerStateProcessMSG_r);
+
+	WRITE_NOP(0x140893DE3, 0x2);
 }

@@ -12,9 +12,6 @@ char DescendKey = 'X';
 char TransformKey = 'Y';
 char UntransformKey = 'Z';
 
-
-
-
 void initConfig()
 {
 	const INIReader reader("config.ini");
@@ -38,5 +35,4 @@ void initConfig()
 	DescendKey = *reader.Get("Key", "DescendKey", k).data();
 	TransformKey = *reader.Get("Key", "TransformKey", k).data();
 	UntransformKey = *reader.Get("Key", "UntransformKey", k).data();
-
 }
