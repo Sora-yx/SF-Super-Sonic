@@ -110,7 +110,7 @@ void ringLoss(SonicContext* SContext)
 }
 
 
-void GainAltitude(StructAB* a)
+void Ascend_CheckInput(StructAB* a)
 {
 	if (isKeyPressed(AscendKey) || isInputPressed(AscendBtn))
 	{
@@ -118,7 +118,7 @@ void GainAltitude(StructAB* a)
 	}
 }
 
-void LoseAltitude(StructAB* a)
+void Descend_CheckInput(StructAB* a)
 {
 	if (isKeyPressed(DescendKey) || isInputPressed(DescendBtn))
 	{
@@ -138,8 +138,8 @@ void SuperSonic_OnFrames(SonicContext* SContext)
 	if (isSuper)
 	{
 		ringLoss(SContext);
-		GainAltitude((StructAB*)param);
-		LoseAltitude((StructAB*)param);
+		Ascend_CheckInput((StructAB*)param);
+		Descend_CheckInput((StructAB*)param);
 	}
 }
 
@@ -172,7 +172,6 @@ HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), SonicCont
 void init_SuperSonicHacks()
 {
 	INSTALL_HOOK(isSuperSonic_r);
-	//sigIsNotCyberSpace()
 	WRITE_NOP(sigsub_IsNotInCyber(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 	INSTALL_HOOK(SuperSonicEffectAura_r); //used to delete super aura when detransform
 
