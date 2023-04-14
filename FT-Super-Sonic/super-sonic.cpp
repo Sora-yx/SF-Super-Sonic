@@ -12,8 +12,6 @@ bool transfoAllowed = false;
 char statusBackup[0x180] = { 0 };
 static StructAB* ab = nullptr;
 int inputDelay = 0;
-bool isGameFinished = false;
-size_t* gameFinishedPtr = nullptr;
 
 //we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
 //
@@ -30,13 +28,6 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 	return auraPtr;
 }
 
-HOOK(bool, __fastcall, isGameFinished_r, 0x1409987E0, size_t* a1)
-{
-	isGameFinished = originalisGameFinished_r(a1);
-	gameFinishedPtr = a1;
-	return isGameFinished;
-}
-
 void Untransfo(SonicContext* SContext)
 {
 	app::player::TriggerSuperSonic(SContext, false);
@@ -47,7 +38,6 @@ void Untransfo(SonicContext* SContext)
 	}
 
 }
-
 
 void PlayMusic();
 void Transfo_CheckInput(SonicContext* SContext)
@@ -109,12 +99,11 @@ void ringLoss(SonicContext* SContext)
 	}
 }
 
-
 void Ascend_CheckInput(StructAB* a)
 {
 	if (isKeyPressed(AscendKey) || isInputPressed(AscendBtn))
 	{
-		a->spdY = 40.0f;
+		a->spdY = 35.0f;
 	}
 }
 
@@ -122,7 +111,7 @@ void Descend_CheckInput(StructAB* a)
 {
 	if (isKeyPressed(DescendKey) || isInputPressed(DescendBtn))
 	{
-		a->spdY = -40.0f;
+		a->spdY = -35.0f;
 	}
 }
 
@@ -177,7 +166,5 @@ void init_SuperSonicHacks()
 
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
-
 	INSTALL_HOOK(PlayerStateProcessMSG_r);
-	INSTALL_HOOK(isGameFinished_r);
 }

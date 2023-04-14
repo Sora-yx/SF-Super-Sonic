@@ -12,27 +12,31 @@ char DescendKey = 'X';
 char TransformKey = 'Y';
 char UntransformKey = 'Z';
 
+
+
+
 void initConfig()
 {
 	const INIReader reader("config.ini");
 
-    if (reader.ParseError() != 0)
-    {
-        MessageBox(nullptr, TEXT("Cannot load configuration file, mod settings won't work.\n"), TEXT("Super Sonic Mod"), MB_ICONERROR);
-        return;
-    }
+	if (reader.ParseError() != 0)
+	{
+		MessageBox(nullptr, TEXT("Cannot load configuration file, mod settings won't work.\n"), TEXT("Super Sonic Mod"), MB_ICONERROR);
+		return;
+	}
 
-    nolimit = reader.GetBoolean("Mod", "nolimit", nolimit);
-    //input
-    AscendBtn = reader.GetInteger("Input", "AscendBtn", AscendBtn);
-    DescendBtn = reader.GetInteger("Input", "DescendBtn", DescendBtn);
-    TransformBtn = reader.GetInteger("Input", "TransformBtn", TransformBtn);
-    UntransformBtn = reader.GetInteger("Input", "UntransformBtn", UntransformBtn);
-    //keyboard
-    AscendKey = reader.GetInteger("Key", "AscendKey", AscendKey);
-    DescendKey = reader.GetInteger("Key", "DescendKey", DescendKey);
-    TransformKey = reader.GetInteger("Key", "TransformKey", TransformKey);
-    UntransformKey = reader.GetInteger("Key", "UntransformKey", UntransformKey);
+	nolimit = reader.GetBoolean("Mod", "nolimit", nolimit);
+	//input
+	AscendBtn = reader.GetInteger("Input", "AscendBtn", AscendBtn);
+	DescendBtn = reader.GetInteger("Input", "DescendBtn", DescendBtn);
+	TransformBtn = reader.GetInteger("Input", "TransformBtn", TransformBtn);
+	UntransformBtn = reader.GetInteger("Input", "UntransformBtn", UntransformBtn);
 
+	std::string k;
+	//keyboard
+	AscendKey = *reader.Get("Key", "AscendKey", k).data();
+	DescendKey = *reader.Get("Key", "DescendKey", k).data();
+	TransformKey = *reader.Get("Key", "TransformKey", k).data();
+	UntransformKey = *reader.Get("Key", "UntransformKey", k).data();
 
 }
