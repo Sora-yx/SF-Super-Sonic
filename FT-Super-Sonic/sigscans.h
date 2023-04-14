@@ -111,3 +111,11 @@ SIG_SCAN
 	"\x48\x83\xEC\x28\x48\x89\x7C\x24\x20", 
 	"xxxxxxxxx"
 )
+
+SIG_SCAN
+(
+	sigsub_IsNotInCyber,
+	0x14079BB8B,
+	"\x74\x12\x41\xB0\x02", 
+	"xxxxx"
+)

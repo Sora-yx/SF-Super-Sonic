@@ -58,7 +58,6 @@ void Transfo_CheckInput(SonicContext* SContext)
 		return;
 	}
 
-
 	if ((isKeyPressed(UntransformKey) || isInputPressed(UntransformBtn)) && isSuper) //detransfo
 	{
 		if (auraPtr)
@@ -130,21 +129,17 @@ void LoseAltitude(StructAB* a)
 void SuperSonic_OnFrames(SonicContext* SContext)
 {
 	//!isInGame() ||
-	if (!SContext || !SContext->pSonic)
+	if (!SContext || !SContext->pSonic || (size_t*)!SContext->pGOCPlayerKinematicPrams)
 		return;
 
+	size_t* param = (size_t*)SContext->pGOCPlayerKinematicPrams;
 	Transfo_CheckInput(SContext);
 
 	if (isSuper)
 	{
 		ringLoss(SContext);
-
-		if (ab)
-		{
-			GainAltitude(ab);
-			LoseAltitude(ab);
-		}
-
+		GainAltitude((StructAB*)param);
+		LoseAltitude((StructAB*)param);
 	}
 }
 
@@ -174,24 +169,16 @@ HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), SonicCont
 	return originalPlayerStateProcessMSG_r(SContext, a2, a3);
 }
 
-HOOK(void, __fastcall, ManageSpeed_r, sigsub_setVSpeedBump(), StructAB* a1, WORD* spd)
-{
-	ab = a1;
-	return originalManageSpeed_r(a1, spd);
-}
-
-
 void init_SuperSonicHacks()
 {
 	INSTALL_HOOK(isSuperSonic_r);
 	//sigIsNotCyberSpace()
-	WRITE_NOP(0x14079BB8B, 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
-
-	INSTALL_HOOK(ManageSpeed_r); //used to gain and lose altitude
+	WRITE_NOP(sigsub_IsNotInCyber(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
+	INSTALL_HOOK(SuperSonicEffectAura_r); //used to delete super aura when detransform
 
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
-	INSTALL_HOOK(SuperSonicEffectAura_r);
+
 	INSTALL_HOOK(PlayerStateProcessMSG_r);
 	INSTALL_HOOK(isGameFinished_r);
 }
