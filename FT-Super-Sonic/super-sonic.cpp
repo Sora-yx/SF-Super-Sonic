@@ -8,11 +8,8 @@ SonicContext* sonicContextPtr = nullptr;
 SSEffAuraS* auraPtr = nullptr;
 static int ringTimer = 0;
 bool isSuper = false;
-bool transfoAllowed = false;
 char statusBackup[0x180] = { 0 };
-static StructAB* ab = nullptr;
-int inputDelay = 0;
-size_t paramBackup = 0;
+uint8_t inputDelay = 0;
 
 //we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
 //
@@ -54,7 +51,6 @@ void Transfo_CheckInput(SonicContext* SContext)
 		}
 
 		Untransfo(SContext);
-		memcpy(&SContext->pGOCPlayerKinematicPrams, &paramBackup, sizeof(size_t));
 		memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
 		return;
 	}
@@ -66,7 +62,6 @@ void Transfo_CheckInput(SonicContext* SContext)
 		{
 			//PlayMusic();
 			//app::player::ChangeStateParameter(SContext, 1, 1);
-			memcpy(&paramBackup, &SContext->pGOCPlayerKinematicPrams, sizeof(size_t));
 			memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));
 			app::player::TriggerSuperSonic(SContext, true);
 			return;
@@ -141,7 +136,6 @@ HOOK(__int64, __fastcall, ChangeStateParameter_r, sigChangeStateParameter(), __i
 	PrintInfo("Set New Stage Param: %d\n", a2);
 	return originalChangeStateParameter_r(a1, a2, a3);
 }
-
 
 int oldMsg = -1;
 HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), SonicContext* SContext, Message* a2, __int64 a3)

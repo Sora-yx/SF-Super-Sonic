@@ -3,7 +3,7 @@
 
 #pragma comment(lib, "XInput.lib") /// Library containing necessary 360
 
-extern int inputDelay;
+extern uint8_t inputDelay;
 static const uint8_t delay = 15;
 
 bool isInputPressed(const int input)
