@@ -1,4 +1,6 @@
 #include "pch.h"
+#include "input.h"
+#include "xinput.h"
 
 //Big shoutout to Death for helping finding the proper function that trigger SS!!!
 
@@ -9,13 +11,12 @@ bool isSuper = false;
 bool transfoAllowed = false;
 char statusBackup[0x180] = { 0 };
 static StructAB* ab = nullptr;
-
-void changeSSMusic();
+int inputDelay = 0;
 
 
 //we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
 //
-HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(),  SonicContext* sCont)
+HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
 {
 	sonicContextPtr = sCont;
 	isSuper = originalisSuperSonic_r(sCont);
@@ -38,27 +39,38 @@ void Untransfo(SonicContext* SContext)
 	}
 }
 
+
+void PlayMusic();
 void Transfo_CheckInput(SonicContext* SContext)
 {
-	if (GetKeyState('Z') & 0x8000 && isSuper) //detransfo
+	if (inputDelay)
+	{
+		inputDelay--;
+		return;
+	}
+	
+
+	if ((isKeyPressed(UntransformKey) || isInputPressed(UntransformBtn)) && isSuper) //detransfo
 	{
 		Untransfo(SContext);
 		memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
 		return;
 	}
-
-	auto ring = app::player::GetRings(SContext);
-
-	if (GetKeyState('Y') & 0x8000 && !isSuper && (nolimit || ring >= 50))
+	else
 	{
-		changeSSMusic();
-		memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));
-		app::player::TriggerSuperSonic(SContext, true);
+		auto ring = app::player::GetRings(SContext);
 
-		if (auraPtr)
-			auraPtr->AuraFlagMaybe &= 1u;
+		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper && (nolimit || ring >= 50))
+		{
+			//PlayMusic();
+			memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));
+			app::player::TriggerSuperSonic(SContext, true);
 
-		return;
+			if (auraPtr)
+				auraPtr->AuraFlagMaybe &= 1u;
+
+			return;
+		}
 	}
 }
 
@@ -88,24 +100,25 @@ void ringLoss(SonicContext* SContext)
 
 void GainAltitude(StructAB* a)
 {
-	if (GetKeyState('W') & 0x8000)
+	if (isKeyPressed(AscendKey) || isInputPressed(AscendBtn))
 	{
-		a->spdY = 20.0f;
+		a->spdY = 30.0f;
 	}
 }
 
 void LoseAltitude(StructAB* a)
 {
-	if (GetKeyState('X') & 0x8000)
+	if (isKeyPressed(DescendKey) || isInputPressed(DescendBtn))
 	{
-		a->spdY = -20.0f;
+		a->spdY = -30.0f;
 	}
 }
+
 
 void SuperSonic_OnFrames(SonicContext* SContext)
 {
 	//!isInGame() ||
-	if ( !SContext || !SContext->pSonic)
+	if (!SContext || !SContext->pSonic)
 		return;
 
 	Transfo_CheckInput(SContext);

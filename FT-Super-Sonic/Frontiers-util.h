@@ -120,7 +120,7 @@ static FUNCTION_PTR(void, __fastcall, SubRing, sigSubRings(), SonicContext* sCon
 namespace app::player
 {
 
-	static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, 0x140889B10, SonicContext* a1, bool enabled);
+	static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
 	static FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
 	static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
 	static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, sigChangeStateParameter(), SonicContext* Sonk, __int64 actionID, __int64 a3);
