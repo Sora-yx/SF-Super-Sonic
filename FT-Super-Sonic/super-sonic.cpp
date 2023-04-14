@@ -12,7 +12,8 @@ bool transfoAllowed = false;
 char statusBackup[0x180] = { 0 };
 static StructAB* ab = nullptr;
 int inputDelay = 0;
-
+bool isGameFinished = false;
+size_t* gameFinishedPtr = nullptr;
 
 //we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
 //
@@ -23,10 +24,17 @@ HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
 	return isSuper;
 }
 
-HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura, 0x140783CE0, SSEffAuraS* ptrSSAura, __int64 a2, Sonic* Sonk, __int64 a4)
+HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSEffAuraS* ptrSSAura)
 {
-	auraPtr = originalSuperSonicEffectAura(ptrSSAura, a2, Sonk, a4);
+	auraPtr = originalSuperSonicEffectAura_r(ptrSSAura);
 	return auraPtr;
+}
+
+HOOK(bool, __fastcall, isGameFinished_r, 0x1409987E0, size_t* a1)
+{
+	isGameFinished = originalisGameFinished_r(a1);
+	gameFinishedPtr = a1;
+	return isGameFinished;
 }
 
 void Untransfo(SonicContext* SContext)
@@ -37,6 +45,7 @@ void Untransfo(SonicContext* SContext)
 	{
 		app::player::ChangeStateParameter(SContext, 1, 1);
 	}
+
 }
 
 
@@ -48,10 +57,15 @@ void Transfo_CheckInput(SonicContext* SContext)
 		inputDelay--;
 		return;
 	}
-	
+
 
 	if ((isKeyPressed(UntransformKey) || isInputPressed(UntransformBtn)) && isSuper) //detransfo
 	{
+		if (auraPtr)
+		{
+			app::player::SSAuraDestructor(auraPtr);
+		}
+
 		Untransfo(SContext);
 		memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
 		return;
@@ -66,8 +80,7 @@ void Transfo_CheckInput(SonicContext* SContext)
 			memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));
 			app::player::TriggerSuperSonic(SContext, true);
 
-			if (auraPtr)
-				auraPtr->AuraFlagMaybe &= 1u;
+
 
 			return;
 		}
@@ -102,7 +115,7 @@ void GainAltitude(StructAB* a)
 {
 	if (isKeyPressed(AscendKey) || isInputPressed(AscendBtn))
 	{
-		a->spdY = 30.0f;
+		a->spdY = 40.0f;
 	}
 }
 
@@ -110,10 +123,9 @@ void LoseAltitude(StructAB* a)
 {
 	if (isKeyPressed(DescendKey) || isInputPressed(DescendBtn))
 	{
-		a->spdY = -30.0f;
+		a->spdY = -40.0f;
 	}
 }
-
 
 void SuperSonic_OnFrames(SonicContext* SContext)
 {
@@ -122,6 +134,7 @@ void SuperSonic_OnFrames(SonicContext* SContext)
 		return;
 
 	Transfo_CheckInput(SContext);
+
 	if (isSuper)
 	{
 		ringLoss(SContext);
@@ -170,7 +183,6 @@ HOOK(void, __fastcall, ManageSpeed_r, sigsub_setVSpeedBump(), StructAB* a1, WORD
 
 void init_SuperSonicHacks()
 {
-
 	INSTALL_HOOK(isSuperSonic_r);
 	//sigIsNotCyberSpace()
 	WRITE_NOP(0x14079BB8B, 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
@@ -179,7 +191,7 @@ void init_SuperSonicHacks()
 
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
-	//INSTALL_HOOK(SuperSonicEffectAura);
+	INSTALL_HOOK(SuperSonicEffectAura_r);
 	INSTALL_HOOK(PlayerStateProcessMSG_r);
-
+	INSTALL_HOOK(isGameFinished_r);
 }

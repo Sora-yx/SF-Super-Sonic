@@ -93,6 +93,11 @@ struct _declspec(align(8)) StateFly
 	char field_10[388];
 };
 
+struct _declspec(align(8)) VisualSonic
+{
+	char field_10[240];
+};
+
 struct Message
 {
 	__int64 field;
@@ -124,6 +129,7 @@ namespace app::player
 	static FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
 	static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
 	static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, sigChangeStateParameter(), SonicContext* Sonk, __int64 actionID, __int64 a3);
+	static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, 0x1407A5CB0, SSEffAuraS* a1);
 }
 
 //Used for research atm, todo: delete when mod is done.

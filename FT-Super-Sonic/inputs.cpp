@@ -4,6 +4,7 @@
 #pragma comment(lib, "XInput.lib") /// Library containing necessary 360
 
 extern int inputDelay;
+
 bool isInputPressed(const int input)
 {
     DWORD dwResult;
