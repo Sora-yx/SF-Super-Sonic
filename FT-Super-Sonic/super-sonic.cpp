@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "input.h"
 #include "xinput.h"
+#include "music.h"
 
 //Big shoutout to Death for helping finding the proper function that trigger SS!!!
 
@@ -26,12 +27,19 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 	return auraPtr;
 }
 
+void Transfo(SonicContext* SContext)
+{
+	memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));
+	app::player::TriggerSuperSonic(SContext, true);
+}
+
 void Untransfo(SonicContext* SContext)
 {
 	app::player::TriggerSuperSonic(SContext, false);
+	memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
 }
 
-void PlayMusic();
+
 void Transfo_CheckInput(SonicContext* SContext)
 {
 	if (inputDelay)
@@ -50,8 +58,9 @@ void Transfo_CheckInput(SonicContext* SContext)
 			app::player::SSAuraDestructor(auraPtr);
 		}
 
+		RestoreOriginalMusic();
 		Untransfo(SContext);
-		memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
+
 		return;
 	}
 	else
@@ -60,12 +69,9 @@ void Transfo_CheckInput(SonicContext* SContext)
 
 		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper && (nolimit || ring >= 50))
 		{
-			//PlayMusic();
-			//app::player::ChangeStateParameter(SContext, 1, 1);
-			memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));
-			app::player::TriggerSuperSonic(SContext, true);
+			PlayMusic();
+			Transfo(SContext);
 			return;
-
 		}
 	}
 }
@@ -160,6 +166,4 @@ void init_SuperSonicHacks()
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
 	INSTALL_HOOK(PlayerStateProcessMSG_r);
-
-	WRITE_NOP(0x140893DE3, 0x2);
 }

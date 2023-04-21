@@ -77,7 +77,6 @@ struct StructAB
 	char field_7c[541];
 };
 
-
 struct SSEffAuraS
 {
 	void* PEffectVfTable;
@@ -88,15 +87,6 @@ struct SSEffAuraS
 	__int64 field2[60];
 };
 
-struct _declspec(align(8)) StateFly
-{
-	char field_10[388];
-};
-
-struct _declspec(align(8)) VisualSonic
-{
-	char field_10[240];
-};
 
 struct Message
 {
@@ -119,9 +109,8 @@ struct CyberStatePlay
 };
 
 
-
 static FUNCTION_PTR(void, __fastcall, SubRing, sigSubRings(), SonicContext* sContext, int count);
-//sigTriggerSS()
+
 namespace app::player
 {
 

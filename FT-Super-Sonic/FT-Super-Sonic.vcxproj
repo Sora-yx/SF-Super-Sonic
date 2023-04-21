@@ -171,6 +171,7 @@
     <ClInclude Include="Frontiers-util.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="mod.h" />
+    <ClInclude Include="music.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="sigscans.h" />
     <ClInclude Include="ss.h" />

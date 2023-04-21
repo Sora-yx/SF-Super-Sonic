@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ss.h"
+#include "music.h"
 
 
 extern "C" {
@@ -12,7 +13,7 @@ extern "C" {
 			//return;
 		}
 
-		BgmService();
+		Init_MusicHacks();
 		initConfig();
 		init_SuperSonicHacks();
 		//init_Util();
