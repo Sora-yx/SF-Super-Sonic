@@ -9,15 +9,13 @@ extern "C" {
 	{
 		if (!sigValid)
 		{
-			//MessageBox(nullptr, TEXT("Unsupported game version.\n"), TEXT("Super Sonic Mod"), MB_ICONERROR);
+			MessageBox(nullptr, TEXT("Unsupported game version.\n"), TEXT("Super Sonic Mod"), MB_ICONERROR);
 			//return;
 		}
 
-		Init_MusicHacks();
 		initConfig();
 		init_SuperSonicHacks();
-		//init_Util();
-		//init_Audio();
+		Init_MusicHacks();
 	}
 
 	__declspec(dllexport) void __cdecl OnFrame()
