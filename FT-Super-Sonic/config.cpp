@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "xinput.h"
 
+
 bool nolimit = false;
 int AscendBtn = XINPUT_GAMEPAD_A;
 int DescendBtn = XINPUT_GAMEPAD_B;
@@ -11,6 +12,7 @@ char AscendKey = 'W';
 char DescendKey = 'X';
 char TransformKey = 'Y';
 char UntransformKey = 'Z';
+uint8_t useSSMusic = TRUE;
 
 void initConfig()
 {
@@ -23,16 +25,20 @@ void initConfig()
 	}
 
 	nolimit = reader.GetBoolean("Mod", "nolimit", nolimit);
+	useSSMusic = (uint8_t)reader.GetBoolean("Mod", "useSSMusic", useSSMusic);
 	//input
 	AscendBtn = reader.GetInteger("Input", "AscendBtn", AscendBtn);
 	DescendBtn = reader.GetInteger("Input", "DescendBtn", DescendBtn);
 	TransformBtn = reader.GetInteger("Input", "TransformBtn", TransformBtn);
 	UntransformBtn = reader.GetInteger("Input", "UntransformBtn", UntransformBtn);
 
-	std::string k;
+	std::string a = "";
 	//keyboard
-	AscendKey = *reader.Get("Key", "AscendKey", k).data();
-	DescendKey = *reader.Get("Key", "DescendKey", k).data();
-	TransformKey = *reader.Get("Key", "TransformKey", k).data();
-	UntransformKey = *reader.Get("Key", "UntransformKey", k).data();
+	AscendKey = *reader.Get("Key", "AscendKey", a).data();
+	std::string d = "";
+	DescendKey = *reader.Get("Key", "DescendKey", d).data();
+	std::string t = "";
+	TransformKey = *reader.Get("Key", "TransformKey", t).data();
+	std::string u = "";
+	UntransformKey = *reader.Get("Key", "UntransformKey", u).data();
 }

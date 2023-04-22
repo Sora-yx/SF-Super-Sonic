@@ -1,15 +1,21 @@
 #include "pch.h"
 
-static size_t* SoundDirector = nullptr;
-static std::string backupBGMName = "";
+size_t* SoundDirector = nullptr;
+std::string backupBGMName = "";
+extern int currentIsland;
 
-const char* songArray[] =
+std::string songArray[] =
 {
 	"bgm_boss01_phase02",
 	"bgm_boss02_phase02",
-	"bgm_boss03_phase02"
+	"bgm_boss03_phase02",
 	"bgm_maintheme"
 };
+
+std::string getSSSong()
+{
+	return currentIsland < 4 ? songArray[currentIsland] : songArray[3];
+}
 
 static bool transfoSS = false;
 const char* backupBGMInfo[2]{ "", 0};
@@ -31,9 +37,10 @@ void PlayMusic()
 {
 	const char** t = backupBGMInfo;
 
-	if (SoundDirector)
+	if (SoundDirector && useSSMusic)
 	{
-		t[0] = songArray[0];
+		std::string song = getSSSong();
+		t[0] = song.c_str();
 		t[1] = backupBGMInfo[1];
 		transfoSS = true;
 		playBGM(SoundDirector, 0, t);
@@ -43,7 +50,7 @@ void PlayMusic()
 void RestoreOriginalMusic()
 {
 	const char** bgmInfo = backupBGMInfo;
-	if (SoundDirector)
+	if (SoundDirector && useSSMusic)
 	{
 		bgmInfo[0] = backupBGMName.c_str();
 		bgmInfo[1] = backupBGMInfo[1];
@@ -53,5 +60,6 @@ void RestoreOriginalMusic()
 
 void Init_MusicHacks()
 {
-	INSTALL_HOOK(PlayBGM_r);
+	if (useSSMusic)
+		INSTALL_HOOK(PlayBGM_r);
 }

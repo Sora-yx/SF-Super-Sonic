@@ -1,6 +1,5 @@
 #pragma once
 
-
 extern bool nolimit;
 extern int AscendBtn;
 extern int DescendBtn;
@@ -14,3 +13,4 @@ extern char UntransformKey;
 
 void initConfig();
 extern bool isSuper;
+extern uint8_t useSSMusic;
