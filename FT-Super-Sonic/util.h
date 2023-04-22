@@ -3,3 +3,10 @@
 void PrintInfo(const char* text, ...);
 bool isInGame();
 void init_Util();
+
+
+template <typename Tret = size_t, typename T, size_t N>
+static constexpr Tret LengthOfArray(const T(&)[N]) noexcept
+{
+	return (Tret)N;
+}

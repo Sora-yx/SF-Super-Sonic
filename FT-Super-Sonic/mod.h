@@ -13,4 +13,4 @@ extern char TransformKey;
 extern char UntransformKey;
 
 void initConfig();
-
+extern bool isSuper;
