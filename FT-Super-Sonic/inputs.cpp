@@ -34,7 +34,7 @@ bool isInputPressed(const int input)
 
 bool isKeyPressed(char key)
 {
-    if (GetKeyState(key) & 0x8000)
+    if (GetKeyState(key) & 0x8000 && GetActiveWindow())
     {
         inputDelay = delay;
         return true;
