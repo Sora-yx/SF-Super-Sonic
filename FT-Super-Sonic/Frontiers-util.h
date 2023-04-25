@@ -1,5 +1,17 @@
 #pragma once
 
+struct __declspec(align(8)) GameModeStagePlay
+{
+	int vftable;
+	int idk2;
+	GameModeStagePlay* instance;
+	char a[20];
+	char b[12];
+	char c[8];
+};
+
+
+
 struct __declspec(align(0x10)) Sonic
 {
 	__int16 field_0;

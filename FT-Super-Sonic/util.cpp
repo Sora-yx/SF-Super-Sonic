@@ -1,8 +1,8 @@
 #include "pch.h"
 
 HANDLE stdoutHandle = nullptr;
-bool IsGameStatePlay = false;
-bool isCyberStatePlay = false;
+static bool inGame= false;
+int currentIsland = 0;
 
 void PrintInfo(const char* text, ...)
 {
@@ -19,42 +19,49 @@ void PrintInfo(const char* text, ...)
 
 bool isInGame()
 {
-	return IsGameStatePlay || isCyberStatePlay;
+	PrintInfo("Is In Game: %d\n", inGame);
+	return inGame;
 }
 
-HOOK(StatePlay*, __fastcall, GameModePlayStateConstructor_r, 0x1401A1F00, StatePlay* a1)
+HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401B5D40, GameModeStagePlay* a1)
 {
-	IsGameStatePlay = true;
-	return originalGameModePlayStateConstructor_r(a1);
+	inGame = true;
+	return originalGameStatePlayAllocator_r(a1);
 }
 
-HOOK(__int64, __fastcall, EndPlayStateMaybe_r, sigEndPlayStateMaybe(), __int64 a1, __int64 a2)
+HOOK(GameModeStagePlay*, __fastcall, GameStatePlayDestructor_r, sigEndGameStatePlay(), __int64 a1, __int64 a2)
 {
-	IsGameStatePlay = false;
-	return originalEndPlayStateMaybe_r(a1, a2);
+	inGame = false;
+	return originalGameStatePlayDestructor_r(a1, a2);
 }
 
-HOOK(CyberStatePlay*, __fastcall, CyberStatePlayConstructor_r, 0x14748CC20, CyberStatePlay* a1)
+//failed to get sig for that one (40 53 \n 48 83 EC 20)
+HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x147416ED0, __int64 a1)
 {
-	isCyberStatePlay = true;
-	return originalCyberStatePlayConstructor_r(a1);
+	inGame = true;
+	return originalCyberSpacePlayStateAllocator_r(a1);
 }
 
-HOOK(__int64, __cdecl, EndCyberStatePlayMaybe_r, 0x14017AFF0, void)
+//failed to get sig for that one (48 83 EC 28 \n 48 8B 0D AD 46 9D 03)
+HOOK(__int64, __fastcall, CyberSpacePlayStateDestructor_r, 0x140187EF0)
 {
-	isCyberStatePlay = false;
-	return originalEndCyberStatePlayMaybe_r();
+	inGame = false;
+	return originalCyberSpacePlayStateDestructor_r();
+}
+
+//sig scan doesn't seem to work for that one  ( 8B 81 A8 00 00 00 )
+HOOK(__int64, __fastcall, GetCurIsland_r, 0x140222FC0, __int64 a1)
+{
+	currentIsland = originalGetCurIsland_r(a1);
+	return currentIsland;
 }
 
 void init_Util()
 {
-
+	INSTALL_HOOK(GetCurIsland_r);
 	//Used to check if the game is on a state "playable", hopefully someday I'll find a more convenient way to do it, LOL
-	INSTALL_HOOK(EndPlayStateMaybe_r);
-
-	return; //no sig scan since update 1.20
-	INSTALL_HOOK(GameModePlayStateConstructor_r);
-
-	INSTALL_HOOK(CyberStatePlayConstructor_r);
-	INSTALL_HOOK(EndCyberStatePlayMaybe_r);
+	INSTALL_HOOK(GameStatePlayAllocator_r);
+	INSTALL_HOOK(GameStatePlayDestructor_r);
+	INSTALL_HOOK(CyberSpacePlayStateAllocator_r);
+	INSTALL_HOOK(CyberSpacePlayStateDestructor_r);
 }

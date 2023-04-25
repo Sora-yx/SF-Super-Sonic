@@ -11,7 +11,8 @@ static int ringTimer = 0;
 bool isSuper = false;
 char statusBackup[0x180] = { 0 };
 uint8_t inputDelay = 0;
-int currentIsland = 0;
+
+
 
 //we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
 //
@@ -39,7 +40,6 @@ void Untransfo(SonicContext* SContext)
 	app::player::TriggerSuperSonic(SContext, false);
 	memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
 }
-
 
 void Transfo_CheckInput(SonicContext* SContext)
 {
@@ -118,8 +118,7 @@ void Descend_CheckInput(StructAB* a)
 
 void SuperSonic_OnFrames(SonicContext* SContext)
 {
-	//!isInGame() ||
-	if (!SContext || !SContext->pSonic || (size_t*)!SContext->pGOCPlayerKinematicPrams)
+	if (!isInGame() || !SContext || !SContext->pSonic || (size_t*)!SContext->pGOCPlayerKinematicPrams)
 		return;
 
 	size_t* param = (size_t*)SContext->pGOCPlayerKinematicPrams;
@@ -158,19 +157,12 @@ HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), SonicCont
 	return originalPlayerStateProcessMSG_r(SContext, a2, a3);
 }
 
-//sig scan doesn't seem to work for that one 
-HOOK(__int64, __fastcall, GetCurIsland_r, 0x140222FC0, __int64 a1)
-{
-	currentIsland = originalGetCurIsland_r(a1);
-	return currentIsland;
-}
-
 void init_SuperSonicHacks()
 {
 	INSTALL_HOOK(isSuperSonic_r);
 	WRITE_NOP(sigsub_IsNotInCyber(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 	INSTALL_HOOK(SuperSonicEffectAura_r); //used to delete super aura when detransform
-	INSTALL_HOOK(GetCurIsland_r);
+
 
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
