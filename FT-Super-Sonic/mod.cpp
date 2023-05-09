@@ -2,7 +2,6 @@
 #include "ss.h"
 #include "music.h"
 
-extern GameModeStagePlay* playStatePtr;
 
 extern "C" {
 
@@ -23,6 +22,5 @@ extern "C" {
 	__declspec(dllexport) void __cdecl OnFrame()
 	{
 		SuperSonic_OnFrames(sonicContextPtr);
-
 	}
 }

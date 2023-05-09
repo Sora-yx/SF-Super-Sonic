@@ -19,7 +19,6 @@ void PrintInfo(const char* text, ...)
 
 bool isInGame()
 {
-	PrintInfo("Is In Game: %d\n", inGame);
 	return inGame;
 }
 
@@ -56,6 +55,12 @@ HOOK(__int64, __fastcall, GetCurIsland_r, 0x140222FC0, __int64 a1)
 	return currentIsland;
 }
 
+
+uint8_t CheckStatusFieldFlags(int64_t in_field, uint32_t in_flags)
+{
+	return _bittest64(&in_field, in_flags);
+}
+
 void init_Util()
 {
 	INSTALL_HOOK(GetCurIsland_r);
@@ -64,4 +69,6 @@ void init_Util()
 	INSTALL_HOOK(GameStatePlayDestructor_r);
 	INSTALL_HOOK(CyberSpacePlayStateAllocator_r);
 	INSTALL_HOOK(CyberSpacePlayStateDestructor_r);
+
 }
+

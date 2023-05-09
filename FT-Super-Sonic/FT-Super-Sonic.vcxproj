@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BlackboardHelper.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Frontiers-util.h" />
     <ClInclude Include="input.h" />

@@ -2,6 +2,7 @@
 #include "input.h"
 #include "xinput.h"
 #include "music.h"
+#include "BlackboardHelper.h"
 
 //Big shoutout to Death for helping finding the proper function that trigger SS!!!
 
@@ -12,10 +13,8 @@ bool isSuper = false;
 char statusBackup[0x180] = { 0 };
 uint8_t inputDelay = 0;
 
+//we hack the function that checks if the player is Super Sonic to copy SonicContext instance
 
-
-//we hack the function that check if the player is Super Sonic to copy SonicContext instance to call Super Sonic later
-//
 HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
 {
 	sonicContextPtr = sCont;
@@ -23,6 +22,7 @@ HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
 	return isSuper;
 }
 
+//copy aura instance to disable it when detransform as the game doesn't do it.
 HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSEffAuraS* ptrSSAura)
 {
 	auraPtr = originalSuperSonicEffectAura_r(ptrSSAura);
@@ -40,6 +40,21 @@ void Untransfo(SonicContext* SContext)
 	app::player::TriggerSuperSonic(SContext, false);
 	memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
 }
+
+static uint8_t CheckStateParameterFlags(SonicContext* SContext, uint32_t in_flags)
+{
+	auto status = SContext->pBlackBoardStatus;
+	return CheckStatusFieldFlags(status->StateParameter, in_flags);
+}
+
+static bool PlayerpressedTransfoBtn = false;
+
+enum task
+{
+	setup,
+	checkInput,
+	onFrames,
+};
 
 void Transfo_CheckInput(SonicContext* SContext)
 {
@@ -70,8 +85,19 @@ void Transfo_CheckInput(SonicContext* SContext)
 
 		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper && (nolimit || ring >= 50))
 		{
+			if (CheckStateParameterFlags(SContext, STATUS_PARAM_JUMP) && !PlayerpressedTransfoBtn)
+			{
+				app::player::ChangeStateParameter(SContext, 1, 0u); //force Sonk to stand state to remove jump ball effect
+				PlayerpressedTransfoBtn = true; //delay a bit the transfo
+				return;
+			}
+		}
+
+		if (PlayerpressedTransfoBtn)
+		{
 			PlayMusic();
 			Transfo(SContext);
+			PlayerpressedTransfoBtn = false;
 			return;
 		}
 	}
@@ -121,7 +147,10 @@ void SuperSonic_OnFrames(SonicContext* SContext)
 	if (!isInGame() || !SContext || !SContext->pSonic || (size_t*)!SContext->pGOCPlayerKinematicPrams)
 		return;
 
-	size_t* param = (size_t*)SContext->pGOCPlayerKinematicPrams;
+	StructAB* param = (StructAB*)SContext->pGOCPlayerKinematicPrams;
+
+	SContext->pGOCPlayerHsm = SContext->pGOCPlayerHsm;
+
 	Transfo_CheckInput(SContext);
 
 	if (isSuper)
@@ -137,9 +166,9 @@ void RemoveRings(SonicContext* SContext)
 	SubRing(SContext, 1);
 }
 
-HOOK(__int64, __fastcall, ChangeStateParameter_r, sigChangeStateParameter(), __int64 a1, __int64 a2, __int64 a3)
+HOOK(__int64, __fastcall, ChangeStateParameter_r, 0x1407BA820, SonicContext* a1, __int64 a2, __int64 a3)
 {
-	PrintInfo("Set New Stage Param: %d\n", a2);
+	PrintInfo("Set New State Param: %d\n", a2);
 	return originalChangeStateParameter_r(a1, a2, a3);
 }
 
@@ -150,21 +179,30 @@ HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), SonicCont
 
 	if (id != oldMsg)
 	{
-		//PrintInfo("new msg: %d\n", id);
+		PrintInfo("new msg: %d\n", id);
 		oldMsg = id;
 	}
 
 	return originalPlayerStateProcessMSG_r(SContext, a2, a3);
 }
 
+HOOK(void, __fastcall, SetNextAnim_r, 0x1407C9280, __int64 a1, const char* a2, unsigned __int8 a3)
+{
+	originalSetNextAnim_r(a1, a2, a3);
+}
+
+
+
 void init_SuperSonicHacks()
 {
+	//WRITE_NOP(0x14B492029, 5);
+
 	INSTALL_HOOK(isSuperSonic_r);
 	WRITE_NOP(sigsub_IsNotInCyber(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 	INSTALL_HOOK(SuperSonicEffectAura_r); //used to delete super aura when detransform
 
-
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
 	INSTALL_HOOK(PlayerStateProcessMSG_r);
+	INSTALL_HOOK(SetNextAnim_r);
 }

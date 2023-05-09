@@ -32,7 +32,9 @@ struct __declspec(align(0x10)) BlackboardStatus
 {
 	__int64 field[5];
 	unsigned int SuperSonic;
-	__int64 field2[42];
+	uint8_t gap2[11];
+	int64_t StateParameter;
+	uint8_t gap3[319];
 };
 
 struct SonicContext
@@ -129,7 +131,7 @@ namespace app::player
 	static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
 	static FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
 	static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
-	static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, sigChangeStateParameter(), SonicContext* Sonk, __int64 actionID, __int64 a3);
+	static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1407BA820, SonicContext* Sonk, __int64 actionID, __int64 a3);
 	static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, 0x1407A5CB0, SSEffAuraS* a1);
 }
 
@@ -144,5 +146,4 @@ FUNCTION_PTR(void, __fastcall, SetNextAnim, 0x1407A7710, __int64 a1, const char*
 FUNCTION_PTR(void, __fastcall, SetAura, 0x14078EFD0, __int64 a1, bool a2);
 FUNCTION_PTR(char**, __cdecl, Gocplayereffect, 0x14078F590, void);
 FUNCTION_PTR(Sonic*, __fastcall, GetPSonic, 0x1401F22D0, SonicContext* a1);
-
 

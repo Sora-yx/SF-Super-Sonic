@@ -10,3 +10,5 @@ static constexpr Tret LengthOfArray(const T(&)[N]) noexcept
 {
 	return (Tret)N;
 }
+
+uint8_t CheckStatusFieldFlags(int64_t in_field, uint32_t in_flags);
