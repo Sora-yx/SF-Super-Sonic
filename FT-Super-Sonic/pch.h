@@ -20,11 +20,15 @@
 
 #include <INIReader.h>
 #include <Helpers.h>
-#include <SigScan.h>
+#include "./rangers-api/rangers-api/rangers-api.h"
+#include "./Signature.h"
 
+//internal
+#include "BlackboardStatus.h"
 #include "sigscans.h"
 #include "Frontiers-util.h"
 #include "util.h"
 #include "mod.h"
+
 
 #endif //PCH_H

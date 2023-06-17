@@ -1,5 +1,11 @@
 #pragma once
 
+enum state
+{
+	StandState,
+	FlyState = 100,
+};
+
 extern bool nolimit;
 extern int AscendBtn;
 extern int DescendBtn;
@@ -11,6 +17,6 @@ extern char DescendKey;
 extern char TransformKey;
 extern char UntransformKey;
 
-void initConfig();
+void Init_Config();
 extern bool isSuper;
 extern uint8_t useSSMusic;

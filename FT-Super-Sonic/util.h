@@ -2,7 +2,7 @@
 
 void PrintInfo(const char* text, ...);
 bool isInGame();
-void init_Util();
+void Init_Util();
 
 
 template <typename Tret = size_t, typename T, size_t N>

@@ -2,4 +2,4 @@
 
 void PlayMusic();
 void RestoreOriginalMusic();
-void Init_MusicHacks();
+void Init_Music();

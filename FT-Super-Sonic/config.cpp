@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "xinput.h"
 
-
 bool nolimit = false;
 int AscendBtn = XINPUT_GAMEPAD_A;
 int DescendBtn = XINPUT_GAMEPAD_B;
@@ -14,7 +13,7 @@ char TransformKey = 'Y';
 char UntransformKey = 'Z';
 uint8_t useSSMusic = TRUE;
 
-void initConfig()
+void Init_Config()
 {
 	const INIReader reader("config.ini");
 

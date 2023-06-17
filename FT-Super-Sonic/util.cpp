@@ -1,7 +1,7 @@
 #include "pch.h"
 
 HANDLE stdoutHandle = nullptr;
-static bool inGame= false;
+static bool inGame = false;
 int currentIsland = 0;
 
 void PrintInfo(const char* text, ...)
@@ -21,6 +21,9 @@ bool isInGame()
 {
 	return inGame;
 }
+
+#pragma region GameState Hooks
+
 
 HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401B5D40, GameModeStagePlay* a1)
 {
@@ -48,6 +51,32 @@ HOOK(__int64, __fastcall, CyberSpacePlayStateDestructor_r, 0x140187EF0)
 	return originalCyberSpacePlayStateDestructor_r();
 }
 
+HOOK(__int64, __fastcall, BattleRushPlayStateAllocator_r, 0x14017D560, __int64 a1)
+{
+	inGame = true;
+	return originalBattleRushPlayStateAllocator_r(a1);
+}
+
+HOOK(__int64, __fastcall, BattleRushPlayStateDestructor_r, 0x14017ECF0, __int64 a1, __int64 a2)
+{
+	inGame = false;
+	return originalBattleRushPlayStateDestructor_r(a1, a2);
+}
+
+
+HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x14018C170, __int64 a1)
+{
+	inGame = true;
+	return originalCyberStageChallengePlayState_Allocator_r(a1);
+}
+
+
+HOOK(char, __fastcall, CyberStageChallengePlayStateDestructor_r, 0x140187EF0)
+{
+	inGame = false;
+	return originalCyberStageChallengePlayStateDestructor_r();
+}
+
 //sig scan doesn't seem to work for that one  ( 8B 81 A8 00 00 00 )
 HOOK(__int64, __fastcall, GetCurIsland_r, 0x140222FC0, __int64 a1)
 {
@@ -56,19 +85,25 @@ HOOK(__int64, __fastcall, GetCurIsland_r, 0x140222FC0, __int64 a1)
 }
 
 
+#pragma endregion
+
 uint8_t CheckStatusFieldFlags(int64_t in_field, uint32_t in_flags)
 {
 	return _bittest64(&in_field, in_flags);
 }
 
-void init_Util()
+
+void Init_Util()
 {
 	INSTALL_HOOK(GetCurIsland_r);
 	//Used to check if the game is on a state "playable", hopefully someday I'll find a more convenient way to do it, LOL
 	INSTALL_HOOK(GameStatePlayAllocator_r);
-	INSTALL_HOOK(GameStatePlayDestructor_r);
 	INSTALL_HOOK(CyberSpacePlayStateAllocator_r);
+	INSTALL_HOOK(BattleRushPlayStateAllocator_r);	
+	INSTALL_HOOK(CyberStageChallengePlayState_Allocator_r);
+
+	INSTALL_HOOK(GameStatePlayDestructor_r);
 	INSTALL_HOOK(CyberSpacePlayStateDestructor_r);
-
+	INSTALL_HOOK(BattleRushPlayStateDestructor_r);
+	INSTALL_HOOK(CyberStageChallengePlayStateDestructor_r);
 }
-

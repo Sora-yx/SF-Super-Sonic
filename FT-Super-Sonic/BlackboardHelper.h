@@ -27,3 +27,78 @@
 #define STATUS_30_SIDEVIEW    0x1A
 #define STATUS_30_POWERBOOST  0x27
 #define STATUS_30_ISLANDSTAGE 0x31
+
+class BlackboardHelper
+{
+public:
+	inline static app::player::BlackboardStatus* GetStatus()
+	{
+		auto* pGameDocument = app::GameDocument::GetSingleton();
+
+		if (!pGameDocument)
+			return nullptr;
+
+		auto* pSonic = pGameDocument->GetGameObject<app::player::Sonic>();
+
+		if (!pSonic)
+			return nullptr;
+
+		auto* pPlayerBlackboard = pSonic->GetComponent<app::player::GOCPlayerBlackboard>();
+
+		if (!pPlayerBlackboard)
+			return nullptr;
+
+		auto* pBlackboardStatus = pPlayerBlackboard->pBlackboard->GetBlackboardContent<app::player::BlackboardStatus>();
+
+		if (!pBlackboardStatus)
+			return nullptr;
+
+		return pBlackboardStatus;
+	}
+
+	inline static uint8_t CheckStatusFieldFlags(int64_t in_field, uint32_t in_flags)
+	{
+		return _bittest64(&in_field, in_flags);
+	}
+
+	inline static uint8_t CheckStatusField30Flags(uint32_t in_flags)
+	{
+		auto status = GetStatus();
+
+		if (!status)
+			return false;
+	
+		return CheckStatusFieldFlags(status->field_30, in_flags);
+	}
+
+	inline static uint8_t CheckStateParameterFlags(uint32_t in_flags)
+	{
+		auto status = GetStatus();
+
+		if (!status)
+			return false;
+
+		return CheckStatusFieldFlags(status->StateParameter, in_flags);
+	}
+
+
+	inline static bool IsCyberSpace()
+	{
+		return !CheckStatusField30Flags(STATUS_30_ISLANDSTAGE);
+	}
+
+	inline static bool IsJumping()
+	{
+		return CheckStateParameterFlags(STATUS_PARAM_JUMP);
+	}
+
+	inline static bool IsSuper()
+	{
+		auto status = GetStatus();
+
+		if (!status)
+			return false;
+
+		return status->SuperSonic;
+	}
+};

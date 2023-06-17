@@ -14,7 +14,7 @@ struct __declspec(align(8)) GameModeStagePlay
 
 struct __declspec(align(0x10)) Sonic
 {
-	__int16 field_0;
+	void* vfTable;
 	char gap2[70];
 	char field_48;
 	char gap49[15];
@@ -30,11 +30,19 @@ struct __declspec(align(0x10)) Sonic
 
 struct __declspec(align(0x10)) BlackboardStatus
 {
-	__int64 field[5];
-	unsigned int SuperSonic;
-	uint8_t gap2[11];
+	INSERT_PADDING(8);
+	int64_t SuperSonic;
+	int64_t field_30;
 	int64_t StateParameter;
-	uint8_t gap3[319];
+	INSERT_PADDING(319);
+};
+
+struct __declspec(align(0x10)) GOCPlayerHsm
+{
+	uint8_t fieldA[272];
+	__int64 stateID;
+	__int64 stateMode;
+	uint8_t fieldB[4];
 };
 
 struct SonicContext
@@ -46,7 +54,7 @@ struct SonicContext
 	Sonic* pSonic;
 	BlackboardStatus* pBlackBoardStatus;
 	__int64 field_30;
-	__int64 pGOCPlayerHsm;
+	GOCPlayerHsm* pGOCPlayerHsm;
 	__int64 field_40;
 	__int64 pGOCPlayerKinematicPrams;
 	__int64 pGOCPlayerBlackboard;
@@ -57,6 +65,8 @@ struct SonicContext
 	__int64 field_78;
 	__int64 field_80;
 };
+
+
 
 struct __declspec(align(4)) StatePluginBossBattle
 {
@@ -72,7 +82,7 @@ struct __declspec(align(4)) StatePluginBossBattle
 	int field_50;
 };
 
-struct StructAB
+struct GOCKinematicPrams
 {
 	__int16 field_0;
 	char gap2[70];
@@ -125,15 +135,6 @@ struct CyberStatePlay
 
 static FUNCTION_PTR(void, __fastcall, SubRing, sigSubRings(), SonicContext* sContext, int count);
 
-namespace app::player
-{
-
-	static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
-	static FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
-	static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
-	static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1407BA820, SonicContext* Sonk, __int64 actionID, __int64 a3);
-	static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, 0x1407A5CB0, SSEffAuraS* a1);
-}
 
 static FUNCTION_PTR(void, __fastcall, playBGM, sigPlayBGM(), size_t* a1, __int64 a2, const char** a3);
 
@@ -147,3 +148,9 @@ FUNCTION_PTR(void, __fastcall, SetAura, 0x14078EFD0, __int64 a1, bool a2);
 FUNCTION_PTR(char**, __cdecl, Gocplayereffect, 0x14078F590, void);
 FUNCTION_PTR(Sonic*, __fastcall, GetPSonic, 0x1401F22D0, SonicContext* a1);
 
+
+static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
+static FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
+static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
+static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1407BA820, SonicContext* Sonk, __int64 actionID, __int64 a3);
+static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, 0x1407A5CB0, SSEffAuraS* a1);

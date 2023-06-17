@@ -58,7 +58,7 @@ void RestoreOriginalMusic()
 	}
 }
 
-void Init_MusicHacks()
+void Init_Music()
 {
 	if (useSSMusic)
 		INSTALL_HOOK(PlayBGM_r);
