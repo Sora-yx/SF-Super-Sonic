@@ -41,10 +41,38 @@ void SuperSonic::Untransfo(SonicContext* SContext)
 	memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
 }
 
+void ForceUnTransfo()
+{
+	if (!sonicContextPtr || !isInGame())
+		return;
+
+	SetSonicFall(sonicContextPtr, 0);
+
+	if (auraPtr)
+	{
+		SSAuraDestructor(auraPtr);
+	}
+
+	RestoreOriginalMusic();
+	SuperSonic::Untransfo(sonicContextPtr);
+	isSuper = false;
+	resetSonicContextPtr();
+}
+
+
 static bool PlayerpressedTransfoBtn = false;
+
+void resetSonicContextPtr()
+{
+	sonicContextPtr = nullptr;
+}
+
 
 void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 {
+	if (!SContext)
+		return;
+
 	if (inputDelay)
 	{
 		inputDelay--;
@@ -68,6 +96,7 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 	}
 	else
 	{
+
 		auto ring = GetRings(SContext);
 
 		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper && (nolimit || ring >= 50))
@@ -120,7 +149,7 @@ void SuperSonic::Ascend_CheckInput(SonicContext* sonk, GOCKinematicPrams* a)
 		if (sonk->pGOCPlayerHsm->stateID < FlyState)
 			ChangeStateParameter(sonk, FlyState, 0);
 
-		a->spdY = 45.0f;
+		a->spdY = 55.0f;
 	}
 }
 
@@ -128,7 +157,7 @@ void SuperSonic::Descend_CheckInput(GOCKinematicPrams* a)
 {
 	if (isKeyPressed(DescendKey) || isInputPressed(DescendBtn))
 	{
-		a->spdY = -45.0f;
+		a->spdY = -55.0f;
 	}
 }
 
@@ -168,7 +197,7 @@ void RemoveRings(SonicContext* SContext)
 
 HOOK(__int64, __fastcall, ChangeStateParameter_r, 0x1407BA820, SonicContext* a1, __int64 a2, __int64 a3)
 {
-	PrintInfo("Set New State Param: %d\n", a2);
+	//PrintInfo("Set New State Param: %d\n", a2);
 	return originalChangeStateParameter_r(a1, a2, a3);
 }
 
@@ -179,7 +208,7 @@ HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), SonicCont
 
 	if (id != oldMsg)
 	{
-		PrintInfo("new msg: %d\n", id);
+		//PrintInfo("new msg: %d\n", id);
 		oldMsg = id;
 	}
 
