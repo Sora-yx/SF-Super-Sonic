@@ -31,7 +31,7 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 
 void SuperSonic::Transfo(SonicContext* SContext)
 {
-	memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));
+	memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));	
 	TriggerSuperSonic(SContext, true);
 }
 
@@ -55,7 +55,6 @@ void ForceUnTransfo()
 
 	RestoreOriginalMusic();
 	SuperSonic::Untransfo(sonicContextPtr);
-	isSuper = false;
 	resetSonicContextPtr();
 }
 
@@ -64,7 +63,10 @@ static bool PlayerpressedTransfoBtn = false;
 
 void resetSonicContextPtr()
 {
+	SetInGameFalse();
 	sonicContextPtr = nullptr;
+	PlayerpressedTransfoBtn = false;
+	isSuper = false;
 }
 
 
@@ -96,12 +98,14 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 	}
 	else
 	{
+		if (!isInGame())
+			return;
 
 		auto ring = GetRings(SContext);
 
 		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper && (nolimit || ring >= 50))
 		{
-			if (BlackboardHelper::IsJumping() && !PlayerpressedTransfoBtn)
+			if ((BlackboardHelper::IsJumping() && !PlayerpressedTransfoBtn))
 			{
 				ChangeStateParameter(SContext, 1, 0u); //force Sonk to stand state to remove jump ball effect
 				PlayerpressedTransfoBtn = true; //delay a bit the transfo
@@ -146,10 +150,7 @@ void SuperSonic::Ascend_CheckInput(SonicContext* sonk, GOCKinematicPrams* a)
 {
 	if (isKeyPressed(AscendKey) || isInputPressed(AscendBtn))
 	{	
-		if (sonk->pGOCPlayerHsm->stateID < FlyState)
-			ChangeStateParameter(sonk, FlyState, 0);
-
-		a->spdY = 55.0f;
+		a->spdY = 50.0f;
 	}
 }
 
@@ -157,7 +158,7 @@ void SuperSonic::Descend_CheckInput(GOCKinematicPrams* a)
 {
 	if (isKeyPressed(DescendKey) || isInputPressed(DescendBtn))
 	{
-		a->spdY = -55.0f;
+		a->spdY = -50.0f;
 	}
 }
 
@@ -176,7 +177,7 @@ void SuperSonic::OnFrames(SonicContext* SContext)
 	if (!isInGame() || BlackboardHelper::GetStatus() == nullptr || !SContext || !SContext->pSonic || (size_t*)!SContext->pGOCPlayerKinematicPrams)
 		return;
 
-	isSuper = BlackboardHelper::IsSuper();
+	isSuper = IsSuperSonic(SContext);
 	GOCKinematicPrams* param = (GOCKinematicPrams*)SContext->pGOCPlayerKinematicPrams;
 
 	SuperSonic::Transfo_CheckInput(SContext);
@@ -186,7 +187,7 @@ void SuperSonic::OnFrames(SonicContext* SContext)
 		SuperSonic::ringLoss(SContext);
 		SuperSonic::Ascend_CheckInput(SContext, param);
 		SuperSonic::Descend_CheckInput(param);
-		SuperSonic::Ground_Check(SContext);
+		//SuperSonic::Ground_Check(SContext);
 	}
 }
 
@@ -195,25 +196,12 @@ void RemoveRings(SonicContext* SContext)
 	SubRing(SContext, 1);
 }
 
-HOOK(__int64, __fastcall, ChangeStateParameter_r, 0x1407BA820, SonicContext* a1, __int64 a2, __int64 a3)
+HOOK(char, __fastcall, ChangeStateParameter_r, 0x1408033E0, SonicContext* a1, __int64 a2, __int64 a3)
 {
-	//PrintInfo("Set New State Param: %d\n", a2);
+	PrintInfo("Set New State Param: %d\n", a2);
 	return originalChangeStateParameter_r(a1, a2, a3);
 }
 
-int oldMsg = -1;
-HOOK(char, __fastcall, PlayerStateProcessMSG_r, sigPStateProcessMSG(), SonicContext* SContext, Message* a2, __int64 a3)
-{
-	auto id = a2->msgID;
-
-	if (id != oldMsg)
-	{
-		//PrintInfo("new msg: %d\n", id);
-		oldMsg = id;
-	}
-
-	return originalPlayerStateProcessMSG_r(SContext, a2, a3);
-}
 
 const char* getSSAnim(const char* anm)
 {
@@ -240,16 +228,17 @@ HOOK(void, __fastcall, SetNextAnim_r, 0x1407C9280, __int64 a1, const char* a2, u
 void SuperSonic::Init() 
 {
 	//kill fly state (test)
-	WRITE_JUMP(0x140844232, 0x14084425D);	
+	/**WRITE_JUMP(0x140844232, 0x14084425D);
 	WRITE_JUMP(0x14B5A5C87, 0x14B5A5CAF);	
-	WRITE_JUMP(0x14084FA3F, 0x14084FA60);
+	WRITE_JUMP(0x14084FA3F, 0x14084FA60);*/
 	
 	INSTALL_HOOK(isSuperSonic_r);
-	WRITE_NOP(sigsub_IsNotInCyber(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
+	WRITE_NOP(sigIsNotCyberSpace(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
+
 	INSTALL_HOOK(SuperSonicEffectAura_r); //used to delete super aura when detransform
 
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
-	INSTALL_HOOK(PlayerStateProcessMSG_r);
-	INSTALL_HOOK(SetNextAnim_r);
+
+	//INSTALL_HOOK(SetNextAnim_r);
 }

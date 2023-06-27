@@ -133,24 +133,14 @@ struct CyberStatePlay
 };
 
 
+static FUNCTION_PTR(bool, __fastcall, IsSuperSonic, sigIsSuperSonic(), SonicContext* a1);
 static FUNCTION_PTR(void, __fastcall, SubRing, sigSubRings(), SonicContext* sContext, int count);
-
-
 static FUNCTION_PTR(void, __fastcall, playBGM, sigPlayBGM(), size_t* a1, __int64 a2, const char** a3);
-
-//Used for research atm, todo: delete when mod is done.
-FUNCTION_PTR(size_t, __fastcall, sub_140b8a8d0, 0x140b8a8d0, size_t* a1);
-FUNCTION_PTR(__int64, __fastcall, sub_14086C710, 0x14086C710, SonicContext* a1, __int64 a2);
-FUNCTION_PTR(void, __fastcall, sub_14079C720, 0x14079C720, __int64 a1, __int64 a2);
-FUNCTION_PTR(char, __fastcall, sub_1407EFB20, 0x1407EFB20, SonicContext* SonicCOntext, __int64 a2, __int64 a3);
-FUNCTION_PTR(void, __fastcall, SetNextAnim, 0x1407A7710, __int64 a1, const char* action, unsigned __int8 a3);
-FUNCTION_PTR(void, __fastcall, SetAura, 0x14078EFD0, __int64 a1, bool a2);
-FUNCTION_PTR(char**, __cdecl, Gocplayereffect, 0x14078F590, void);
-FUNCTION_PTR(Sonic*, __fastcall, GetPSonic, 0x1401F22D0, SonicContext* a1);
 
 
 static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
 static FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
 static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
-static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1407BA820, SonicContext* Sonk, __int64 actionID, __int64 a3);
-static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, 0x1407A5CB0, SSEffAuraS* a1);
+static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1408033E0, SonicContext* Sonk, __int64 actionID, __int64 a3);
+static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, sigsub_SSAuraDestructor(), SSEffAuraS* a1);
+static FUNCTION_PTR(__int64, __fastcall, SetNewMSG, sigSetNewMsg(), __int64* a1, int a2);
