@@ -7,11 +7,12 @@ namespace app::player
 		inline static const char* ms_pBlackboardName = "BlackboardStatus";
 
 	public:
-		INSERT_PADDING(8);
-		int64_t SuperSonic;
-		int64_t field_30;
-		int64_t StateParameter;
-		INSERT_PADDING(319);
+		INSERT_PADDING(0x10);
+		int64_t StateFlags;
+		int64_t WorldFlags;
+		INSERT_PADDING(0xF0);
+		bool IsIslandSideView;
+		INSERT_PADDING(0x4F);
 
 		size_t GetNameHash() override
 		{
@@ -22,6 +23,5 @@ namespace app::player
 		{
 			return ms_pBlackboardName;
 		}
-
 	};
 }
