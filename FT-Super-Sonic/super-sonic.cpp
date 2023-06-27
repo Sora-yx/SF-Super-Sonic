@@ -13,7 +13,7 @@ static int ringTimer = 0;
 bool isSuper = false;
 char statusBackup[sizeof(BlackboardStatus)] = {0};
 uint8_t inputDelay = 0;
-
+int curState = 0;
 //we hack the function that checks if the player is Super Sonic to copy SonicContext instance
 
 HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
@@ -185,9 +185,12 @@ void SuperSonic::OnFrames(SonicContext* SContext)
 	if (isSuper)
 	{
 		SuperSonic::ringLoss(SContext);
-		SuperSonic::Ascend_CheckInput(SContext, param);
-		SuperSonic::Descend_CheckInput(param);
-		//SuperSonic::Ground_Check(SContext);
+
+		if (BlackboardHelper::IsFlyingAsSS())
+		{
+			SuperSonic::Ascend_CheckInput(SContext, param);
+			SuperSonic::Descend_CheckInput(param);
+		}
 	}
 }
 
@@ -199,6 +202,7 @@ void RemoveRings(SonicContext* SContext)
 HOOK(char, __fastcall, ChangeStateParameter_r, 0x1408033E0, SonicContext* a1, __int64 a2, __int64 a3)
 {
 	PrintInfo("Set New State Param: %d\n", a2);
+	curState = a2;
 	return originalChangeStateParameter_r(a1, a2, a3);
 }
 

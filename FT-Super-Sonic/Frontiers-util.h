@@ -30,11 +30,12 @@ struct __declspec(align(0x10)) Sonic
 
 struct __declspec(align(0x10)) BlackboardStatus
 {
-	INSERT_PADDING(8);
-	int64_t SuperSonic;
-	int64_t field_30;
-	int64_t StateParameter;
-	INSERT_PADDING(319);
+	INSERT_PADDING(0x10);
+	int64_t StateFlags;
+	int64_t WorldFlags;
+	INSERT_PADDING(0xF0);
+	bool IsIslandSideView;
+	INSERT_PADDING(0x4F);
 };
 
 struct __declspec(align(0x10)) GOCPlayerHsm
@@ -67,20 +68,6 @@ struct SonicContext
 };
 
 
-
-struct __declspec(align(4)) StatePluginBossBattle
-{
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_22;
-	int field_26;
-	int field_30;
-	int field_34;
-	int field_38;
-	SonicContext* pSonicContext;
-	int field_50;
-};
 
 struct GOCKinematicPrams
 {

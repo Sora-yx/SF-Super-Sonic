@@ -1,5 +1,7 @@
 #pragma once
 
+extern int curState;
+
 #define STATUS_PARAM_BOOST          0x01
 #define STATUS_PARAM_RECOVERYJUMP   0x02
 #define STATUS_PARAM_AIRBOOST       0x04
@@ -145,9 +147,13 @@ public:
 		return CheckStateFlags(EStateFlags::EStateFlags_IsJump);
 	}
 
-
 	inline static bool IsWallClimbing()
 	{
 		return CheckStateFlags(EStateFlags::EStateFlags_IsWallClimb);
+	}
+
+	inline static bool IsFlyingAsSS()
+	{
+		return isSuper && curState == 102;
 	}
 };
