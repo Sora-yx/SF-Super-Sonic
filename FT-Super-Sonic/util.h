@@ -5,11 +5,11 @@ bool isInGame();
 void Init_Util();
 
 void SetInGameFalse();
+int GetKey(std::string s);
+
 
 template <typename Tret = size_t, typename T, size_t N>
 static constexpr Tret LengthOfArray(const T(&)[N]) noexcept
 {
 	return (Tret)N;
 }
-
-uint8_t CheckStatusFieldFlags(int64_t in_field, uint32_t in_flags);

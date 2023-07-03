@@ -32,11 +32,13 @@ bool isInputPressed(const int input)
 }
 
 
-bool isKeyPressed(char key)
+bool isKeyPressed(std::string key)
 {
-    if (GetKeyState(key) & 0x8000 && GetActiveWindow())
+    if (GetKeyState(GetKey(key)) & 0x8000 && GetActiveWindow())
     {
         inputDelay = delay;
         return true;
     }
+
+    return false;
 }

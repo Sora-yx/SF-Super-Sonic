@@ -1,6 +1,6 @@
 #include "pch.h"
 
-size_t* SoundDirector = nullptr;
+SoundDirector* SoundDirectorPtr = nullptr;
 std::string backupBGMName = "";
 extern int currentIsland;
 
@@ -17,49 +17,55 @@ std::string getSSSong()
 	return currentIsland < 4 ? songArray[currentIsland] : songArray[3];
 }
 
-static bool transfoSS = false;
-const char* backupBGMInfo[2]{ "", 0};
+static bool disabled = false;
 
-HOOK(void, __fastcall, PlayBGM_r, sigPlayBGM(), size_t* in_soundDirector, __int64 a2, const char** bgmName)
+HOOK(void, __fastcall, PlayBGM_r, sigPlayBGM(), SoundDirector* in_soundDirector, const char** bgmName)
 {
-	if (!transfoSS)
+	if (!disabled) 
 	{
 		backupBGMName = bgmName[0];
-		*backupBGMInfo = *bgmName;
 	}
 
-	SoundDirector = in_soundDirector;
-	originalPlayBGM_r(in_soundDirector, a2, bgmName);
-	transfoSS = false;
+	originalPlayBGM_r(in_soundDirector, bgmName);
+	disabled = false;
 }
 
 void PlayMusic()
 {
-	const char** t = backupBGMInfo;
+	std::string son = getSSSong();
+	const char* bgmInfo = son.c_str();
+	const char** song = &bgmInfo;
 
-	if (SoundDirector && useSSMusic)
+	if (SoundDirectorPtr && useSSMusic)
 	{
-		std::string song = getSSSong();
-		t[0] = song.c_str();
-		t[1] = backupBGMInfo[1];
-		transfoSS = true;
-		playBGM(SoundDirector, 0, t);
+		disabled = true;
+		playBGM(SoundDirectorPtr, song);
 	}
 }
 
+//unsupported sig scan :(
+HOOK(SoundDirector*, __fastcall, SoundDirector_Constructor_r, 0x140922C40, SoundDirector* a1)
+{
+	SoundDirectorPtr = originalSoundDirector_Constructor_r(a1);
+	return SoundDirectorPtr;
+}
+
+//seems to only work from time to time, lol
 void RestoreOriginalMusic()
 {
-	const char** bgmInfo = backupBGMInfo;
-	if (SoundDirector && useSSMusic)
+	const char* bgmInfo = backupBGMName.c_str();
+	const char** song = &bgmInfo;
+	if (SoundDirectorPtr && useSSMusic)
 	{
-		bgmInfo[0] = backupBGMName.c_str();
-		bgmInfo[1] = backupBGMInfo[1];
-		playBGM(SoundDirector, 0, bgmInfo);
+		playBGM(SoundDirectorPtr, song);
 	}
 }
 
 void Init_Music()
 {
 	if (useSSMusic)
-		INSTALL_HOOK(PlayBGM_r);
+	{
+		INSTALL_HOOK(PlayBGM_r); 
+		INSTALL_HOOK(SoundDirector_Constructor_r);
+	}
 }

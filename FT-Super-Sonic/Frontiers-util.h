@@ -11,7 +11,6 @@ struct __declspec(align(8)) GameModeStagePlay
 };
 
 
-
 struct __declspec(align(0x10)) Sonic
 {
 	void* vfTable;
@@ -119,10 +118,15 @@ struct CyberStatePlay
 	int field_0[15];
 };
 
+struct __declspec(align(0x8)) SoundDirector
+{
+	INSERT_PADDING(672);
+};
 
 static FUNCTION_PTR(bool, __fastcall, IsSuperSonic, sigIsSuperSonic(), SonicContext* a1);
 static FUNCTION_PTR(void, __fastcall, SubRing, sigSubRings(), SonicContext* sContext, int count);
-static FUNCTION_PTR(void, __fastcall, playBGM, sigPlayBGM(), size_t* a1, __int64 a2, const char** a3);
+static FUNCTION_PTR(void, __fastcall, playBGM, sigPlayBGM(), SoundDirector* a1, const char** a3);
+
 
 
 static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);

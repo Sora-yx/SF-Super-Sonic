@@ -5,12 +5,12 @@
 HANDLE stdoutHandle = nullptr;
 static bool inGame = false;
 int currentIsland = 0;
-
+__int64* MsgPtr = nullptr;
 
 enum msg
 {
 	Msgpause = 9064,
-	MsgEndPhaseBRush = 8427,
+	MsgEndPhaseBRush = 8427, //more like end regular combat I think
 	MsgEndCyber = 8578,
 
 };
@@ -48,14 +48,12 @@ HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401CD4E0, Game
 	return originalGameStatePlayAllocator_r(a1);
 }
 
-
 //failed to get sig for that one (40 53 \n 48 83 EC 20)
 HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x1473AB790, __int64 a1)
 {
 	inGame = true;
 	return originalCyberSpacePlayStateAllocator_r(a1);
 }
-
 
 
 HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x14019B860, __int64 a1)
@@ -73,26 +71,6 @@ HOOK(__int64, __fastcall, GetCurIsland_r, sigGetCurIsland_(), __int64 a1)
 
 #pragma endregion
 
-uint8_t CheckStatusFieldFlags(int64_t in_field, uint32_t in_flags)
-{
-	return _bittest64(&in_field, in_flags);
-}
-
-std::vector<int> PrevMsg;
-
-bool isValid(int msg)
-{
-	for (uint16_t i = 0; i < PrevMsg.size(); i++)
-	{
-		if (PrevMsg[i] == msg)
-		{
-			return false;
-		}
-	}
-
-	PrevMsg.push_back(msg);
-	return true;
-}
 
 HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgID)
 {
@@ -117,18 +95,21 @@ HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgI
 	return originalSetNewMSG_r(a1, msgID);
 }
 
-HOOK(__int64, __fastcall, BattleRushNextPhase_r, sigBattleRushNextPhase(), __int64 a1, __int64 a2)
+int GetKey(std::string s)
 {
-	if (isSuper)
+	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+
+	if (s.find("space") != std::string::npos)
 	{
-		ForceUnTransfo();
+ 		return VK_SPACE;
 	}
-	else
+	else if (s.find("ctrl") != std::string::npos)
 	{
-		resetSonicContextPtr();			
+		return VK_CONTROL;
 	}
-	
-	return originalBattleRushNextPhase_r(a1, a2);
+
+	char ch = s.c_str()[0];
+	return ch;
 }
 
 void Init_Util()

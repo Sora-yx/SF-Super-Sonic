@@ -7,10 +7,10 @@ int DescendBtn = XINPUT_GAMEPAD_B;
 int TransformBtn = XINPUT_GAMEPAD_DPAD_UP;
 int UntransformBtn = XINPUT_GAMEPAD_DPAD_DOWN;
 
-char AscendKey = 'W';
-char DescendKey = 'X';
-char TransformKey = 'Y';
-char UntransformKey = 'Z';
+std::string AscendKey = "SPACE";
+std::string DescendKey = "CTRL";
+std::string TransformKey = "Y";
+std::string UntransformKey = "Z";
 uint8_t useSSMusic = TRUE;
 
 void Init_Config()
@@ -31,13 +31,10 @@ void Init_Config()
 	TransformBtn = reader.GetInteger("Input", "TransformBtn", TransformBtn);
 	UntransformBtn = reader.GetInteger("Input", "UntransformBtn", UntransformBtn);
 
-	std::string a = "";
+
 	//keyboard
-	AscendKey = *reader.Get("Key", "AscendKey", a).data();
-	std::string d = "";
-	DescendKey = *reader.Get("Key", "DescendKey", d).data();
-	std::string t = "";
-	TransformKey = *reader.Get("Key", "TransformKey", t).data();
-	std::string u = "";
-	UntransformKey = *reader.Get("Key", "UntransformKey", u).data();
+	AscendKey = reader.Get("Key", "AscendKey", AscendKey);
+	DescendKey = reader.Get("Key", "DescendKey", DescendKey);
+	TransformKey = reader.Get("Key", "TransformKey", TransformKey);
+	UntransformKey = reader.Get("Key", "UntransformKey", UntransformKey);	
 }
