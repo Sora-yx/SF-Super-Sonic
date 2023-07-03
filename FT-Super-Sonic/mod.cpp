@@ -3,6 +3,7 @@
 #include "music.h"
 #include "input.h"
 #include "./Loaders/LostCodeLoader.h"
+#include "bass.h"
 
 
 std::string modPath = "";
@@ -25,6 +26,10 @@ extern "C" {
 			if (pos != std::string::npos)
 				modPath.erase(pos + 1);
 		}
+		else
+		{
+			PrintInfo("SS Mod: Failed to get mod path, music won't work.\n");
+		}
 			
 		Init_Config(); //get player config
 		SuperSonic::Init();
@@ -35,5 +40,10 @@ extern "C" {
 	__declspec(dllexport) void OnFrame()
 	{
 		SuperSonic::OnFrames(sonicContextPtr);
+	}
+
+	__declspec(dllexport) void OnExit()
+	{
+		//BASS_Free();
 	}
 }

@@ -4,4 +4,6 @@ void PlayMusic();
 void RestoreOriginalMusic();
 void Init_Music();
 
-void Release_MiniAudiEngine();
+void __cdecl PauseBassMusic();
+void ResumeBassMusic();
+void StopBassMusic();

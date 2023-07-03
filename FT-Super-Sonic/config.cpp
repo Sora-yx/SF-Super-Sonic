@@ -13,6 +13,10 @@ std::string TransformKey = "Y";
 std::string UntransformKey = "Z";
 uint8_t useSSMusic = TRUE;
 
+int currentSuperFormIndex = random;
+
+float vol = 80.0f;
+
 void Init_Config()
 {
 	const INIReader reader("config.ini");
@@ -24,17 +28,22 @@ void Init_Config()
 	}
 
 	nolimit = reader.GetBoolean("Mod", "nolimit", nolimit);
-	useSSMusic = (uint8_t)reader.GetBoolean("Mod", "useSSMusic", useSSMusic);
+
+	useSSMusic = (uint8_t)reader.GetBoolean("Audio", "useSSMusic", useSSMusic);
+	vol = reader.GetFloat("Audio", "vol", vol);
+	currentSuperFormIndex = reader.GetInteger("Audio", "musicList", currentSuperFormIndex);
+
 	//input
 	AscendBtn = reader.GetInteger("Input", "AscendBtn", AscendBtn);
 	DescendBtn = reader.GetInteger("Input", "DescendBtn", DescendBtn);
 	TransformBtn = reader.GetInteger("Input", "TransformBtn", TransformBtn);
 	UntransformBtn = reader.GetInteger("Input", "UntransformBtn", UntransformBtn);
 
-
 	//keyboard
 	AscendKey = reader.Get("Key", "AscendKey", AscendKey);
 	DescendKey = reader.Get("Key", "DescendKey", DescendKey);
 	TransformKey = reader.Get("Key", "TransformKey", TransformKey);
 	UntransformKey = reader.Get("Key", "UntransformKey", UntransformKey);	
+
+
 }

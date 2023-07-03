@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ss.h"
 #include <vector>
+#include "music.h"
 
 HANDLE stdoutHandle = nullptr;
 static bool inGame = false;
@@ -45,6 +46,7 @@ void SetInGameFalse()
 HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401CD4E0, GameModeStagePlay* a1)
 {
 	inGame = true;
+	ResumeBassMusic();
 	return originalGameStatePlayAllocator_r(a1);
 }
 
@@ -52,6 +54,7 @@ HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401CD4E0, Game
 HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x1473AB790, __int64 a1)
 {
 	inGame = true;
+	ResumeBassMusic();
 	return originalCyberSpacePlayStateAllocator_r(a1);
 }
 
@@ -59,11 +62,12 @@ HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x1473AB790, __int64 a
 HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x14019B860, __int64 a1)
 {
 	inGame = true;
+	ResumeBassMusic();
 	return originalCyberStageChallengePlayState_Allocator_r(a1);
 }
 
 //sig scan doesn't seem to work for that one  ( 8B 81 A8 00 00 00 )
-HOOK(__int64, __fastcall, GetCurIsland_r, sigGetCurIsland_(), __int64 a1)
+HOOK(__int64, __fastcall, GetCurIsland_r, 0x14023A250, __int64 a1)
 {
 	currentIsland = originalGetCurIsland_r(a1);
 	return currentIsland;
@@ -77,6 +81,7 @@ HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgI
 
 	if (msgID == Msgpause) 
 	{
+		PauseBassMusic();
 		resetSonicContextPtr();
 	}
 

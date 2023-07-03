@@ -58,7 +58,6 @@ void ForceUnTransfo()
 	resetSonicContextPtr();
 }
 
-
 static bool PlayerpressedTransfoBtn = false;
 
 void resetSonicContextPtr()

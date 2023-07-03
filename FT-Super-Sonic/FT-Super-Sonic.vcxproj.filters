@@ -48,9 +48,6 @@
     <ClInclude Include="BlackboardStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="miniaudio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
