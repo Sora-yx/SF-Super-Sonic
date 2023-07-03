@@ -7,7 +7,9 @@ namespace app::player
 		inline static const char* ms_pBlackboardName = "BlackboardStatus";
 
 	public:
-		INSERT_PADDING(0x10);
+		INSERT_PADDING(0x4);
+		char isSuper;
+		INSERT_PADDING(0xB);
 		int64_t StateFlags;
 		int64_t WorldFlags;
 		INSERT_PADDING(0xF0);

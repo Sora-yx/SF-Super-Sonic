@@ -152,6 +152,11 @@ public:
 		return CheckStateFlags(EStateFlags::EStateFlags_IsWallClimb);
 	}
 
+	inline static bool IsSuper()
+	{
+		return GetStatus()->isSuper;
+	}
+
 	inline static bool IsFlyingAsSS()
 	{
 		return isSuper && curState == 102;

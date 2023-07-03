@@ -162,22 +162,15 @@ void SuperSonic::Descend_CheckInput(GOCKinematicPrams* a)
 	}
 }
 
-void SuperSonic::Ground_Check(SonicContext* SContext)
-{
-	bool ground = false;
-
-	if (ground)
-	{
-		ChangeStateParameter(SContext, 1, 0u);
-	}
-}
 
 void SuperSonic::OnFrames(SonicContext* SContext)
 {
 	if (!isInGame() || BlackboardHelper::GetStatus() == nullptr || !SContext || !SContext->pSonic || (size_t*)!SContext->pGOCPlayerKinematicPrams)
 		return;
 
-	isSuper = IsSuperSonic(SContext);
+
+	isSuper = BlackboardHelper::IsSuper();
+
 	GOCKinematicPrams* param = (GOCKinematicPrams*)SContext->pGOCPlayerKinematicPrams;
 
 	SuperSonic::Transfo_CheckInput(SContext);
@@ -201,7 +194,10 @@ void RemoveRings(SonicContext* SContext)
 
 HOOK(char, __fastcall, ChangeStateParameter_r, 0x1408033E0, SonicContext* a1, __int64 a2, __int64 a3)
 {
+#ifndef DEBUG
 	PrintInfo("Set New State Param: %d\n", a2);
+#endif // !DEBUG
+
 	curState = a2;
 	return originalChangeStateParameter_r(a1, a2, a3);
 }
@@ -229,13 +225,17 @@ HOOK(void, __fastcall, SetNextAnim_r, 0x1407C9280, __int64 a1, const char* a2, u
 	originalSetNextAnim_r(a1, a2, a3);
 }
 
+//used during Titan fight to set SS and ring drain
+HOOK(char, __fastcall, sub_1408D55D0_r, 0x1408D55D0, __int64 a1, __int64 a2, float a3)
+{
+	//we don't want the custom SS stuff like ring drain to work during Titan fights.
+	SetInGameFalse();
+	return originalsub_1408D55D0_r(a1, a2, a3);
+}
+
 void SuperSonic::Init() 
 {
-	//kill fly state (test)
-	/**WRITE_JUMP(0x140844232, 0x14084425D);
-	WRITE_JUMP(0x14B5A5C87, 0x14B5A5CAF);	
-	WRITE_JUMP(0x14084FA3F, 0x14084FA60);*/
-	
+
 	INSTALL_HOOK(isSuperSonic_r);
 	WRITE_NOP(sigIsNotCyberSpace(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 
@@ -244,5 +244,5 @@ void SuperSonic::Init()
 	//used for research atm, todo: delete after
 	INSTALL_HOOK(ChangeStateParameter_r);
 
-	//INSTALL_HOOK(SetNextAnim_r);
+	INSTALL_HOOK(sub_1408D55D0_r);
 }
