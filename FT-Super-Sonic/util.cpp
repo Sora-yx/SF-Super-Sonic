@@ -12,7 +12,7 @@ __int64* MsgPtr = nullptr;
 
 enum msg
 {
-	Msgpause = 9064,
+	Msgpause = 9114,
 	MsgEndPhaseBRush = 8427, //more like end regular combat I think
 	MsgEndCyber = 8578,
 
@@ -36,9 +36,27 @@ bool isInGame()
 	return inGame;
 }
 
+static bool triggerEnableGame = false;
+static int timerDelay = 0;
 void SetInGameFalse()
 {
 	inGame = false;
+	timerDelay = 0;
+	triggerEnableGame = false;
+}
+
+
+void SetInGameTrue()
+{
+	if (triggerEnableGame)
+	{
+		if (++timerDelay == 50)
+		{
+			inGame = true;
+			timerDelay = 0;
+			triggerEnableGame = false;
+		}
+	}	
 }
 
 #pragma region GameState Hooks
@@ -47,24 +65,23 @@ void SetInGameFalse()
 //failed to get sigscan :(
 HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401CD4E0, GameModeStagePlay* a1)
 {
-	inGame = true;
 	ResumeBassMusic();
-	return originalGameStatePlayAllocator_r(a1);
+	triggerEnableGame = true;
+	return  originalGameStatePlayAllocator_r(a1);;
 }
 
 //failed to get sig for that one (40 53 \n 48 83 EC 20)
 HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x1473AB790, __int64 a1)
 {
-	inGame = true;
 	ResumeBassMusic();
-	return originalCyberSpacePlayStateAllocator_r(a1);
+	triggerEnableGame = true;
+	return  originalCyberSpacePlayStateAllocator_r(a1);
 }
-
 
 HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x14019B860, __int64 a1)
 {
-	inGame = true;
 	ResumeBassMusic();
+	triggerEnableGame = true;
 	return originalCyberStageChallengePlayState_Allocator_r(a1);
 }
 
@@ -75,12 +92,40 @@ HOOK(__int64, __fastcall, GetCurIsland_r, 0x14023A250, __int64 a1)
 	return currentIsland;
 }
 
+HOOK(__int64, __fastcall, TrainingStart_r, 0x1401AFB30, __int64 a1, __int64 a2)
+{
+	resetSonicContextPtr();
+	return originalTrainingStart_r(a1, a2);
+}
+
+
+HOOK(__int64, __fastcall, TrainingStart2_r, 0x14764D920, __int64 a1)
+{
+	resetSonicContextPtr();
+	return originalTrainingStart2_r(a1);
+}
+
 #pragma endregion
+
+
+std::vector<int64_t> msgV;
+
+static bool isValid(int64_t msg)
+{
+	for (int i = 0; i < msgV.size(); i++)
+	{
+		if (msgV.at(i) == msg)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
 
 
 HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgID)
 {
-
 	if (msgID == Msgpause) 
 	{
 		PauseBassMusic();
@@ -151,6 +196,20 @@ std::string findFile(const std::string& folderPath, const std::string& fileName)
 	return "";
 }
 
+void SetInfiniteBoost()
+{
+	WRITE_NOP(sig_SetBoostValue(), 0x5);
+}
+
+void DisableInfiniteBoost()
+{
+	intptr_t address = (intptr_t)sig_SetBoostValue();
+	WRITE_MEMORY(address, uint8_t, 0xF3);
+	WRITE_MEMORY(address + 1, uint8_t, 0xF);
+	WRITE_MEMORY(address + 2, uint8_t, 0x11);
+	WRITE_MEMORY(address + 3, uint8_t, 0x4F);
+	WRITE_MEMORY(address + 4, uint8_t, 0x3C);
+}
 
 void Init_Util()
 {
@@ -161,6 +220,9 @@ void Init_Util()
 	INSTALL_HOOK(CyberSpacePlayStateAllocator_r);
 
 	INSTALL_HOOK(CyberStageChallengePlayState_Allocator_r);
+
+	INSTALL_HOOK(TrainingStart_r);
+	INSTALL_HOOK(TrainingStart2_r);
 
 	//used to check that the game has been paused
 	INSTALL_HOOK(SetNewMSG_r);

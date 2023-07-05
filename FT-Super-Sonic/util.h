@@ -15,3 +15,7 @@ static constexpr Tret LengthOfArray(const T(&)[N]) noexcept
 }
 
 std::string findFile(const std::string& folderPath, const std::string& fileName);
+
+void SetInfiniteBoost();
+void DisableInfiniteBoost();
+void SetInGameTrue();

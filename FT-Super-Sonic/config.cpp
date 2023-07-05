@@ -15,7 +15,7 @@ uint8_t useSSMusic = TRUE;
 
 int currentSuperFormIndex = random;
 
-float vol = 50.0f;
+float vol = 80.0f;
 
 void Init_Config()
 {
@@ -45,5 +45,8 @@ void Init_Config()
 	TransformKey = reader.Get("Key", "TransformKey", TransformKey);
 	UntransformKey = reader.Get("Key", "UntransformKey", UntransformKey);	
 
+	if (!vol)
+		vol = -10000.0f;
 
+	vol = 100.0f * (89.0f * vol / 100.0f - 100.0f);
 }

@@ -1,10 +1,15 @@
 #include "pch.h"
+#include "bass_vgmstream.h"
+#include <memory>
 
 SoundDirector* SoundDirectorPtr = nullptr;
 std::string backupBGMName = "";
 extern int currentIsland;
 static  bool bassinit = false;
-#include "bass_vgmstream.h"
+
+//they need to be global, don't ask
+const char* restoreTrack = "";
+const char* s = "DISABLE";
 
 std::string songArray[] =
 {
@@ -98,29 +103,27 @@ HOOK(void, __fastcall, PlayBGM_r, sigPlayBGM(), SoundDirector* in_soundDirector,
 	if (!disabled)
 	{
 		StopBassMusic();
-		backupBGMName = bgmName[0];
+		backupBGMName = bgmName[0]; 
 	}
 
 	originalPlayBGM_r(in_soundDirector, bgmName);
 	disabled = false;
 }
 
+
 void PlayMusic()
 {
-	const char* disableBGM = "DISABLE";
-	const char** disableBGM_ = &disableBGM;
-
 	if (SoundDirectorPtr && useSSMusic)
 	{
 		disabled = true;
-		playBGM(SoundDirectorPtr, disableBGM_); //disable current music
+		playBGM(SoundDirectorPtr, &s); //disable current music
 		std::string bgmName = getSSSong();
 		std::string folderPath = (std::string)modPath + "music";
 		std::string fullPath = findFile(folderPath, bgmName); //get extension of the music and combine the path with it.
 		const uint32_t size = fullPath.length() + 1;
-		char* trackNameChar = new char[size];
-		strcpy_s(trackNameChar, size, fullPath.c_str());
-		PlayBassMusic(trackNameChar); //use bass to play music so we can use custom song without replacing anything
+		std::unique_ptr<char[]> trackNameChar(new char[size]);
+		strcpy_s(trackNameChar.get(), size, fullPath.c_str());
+		PlayBassMusic(trackNameChar.get()); //use bass to play music so we can use custom song without replacing anything
 	}
 }
 
@@ -134,12 +137,16 @@ HOOK(SoundDirector*, __fastcall, SoundDirector_Constructor_r, 0x140922C40, Sound
 //seems to only work from time to time, lol
 void RestoreOriginalMusic()
 {
-	const char* bgmInfo = backupBGMName.c_str();
-	const char** song = &bgmInfo;
+	const uint32_t size = backupBGMName.length() + 1;
+	std::unique_ptr<char[]> trackNameChar(new char[size]);
+	strcpy_s(trackNameChar.get(), size, backupBGMName.c_str());
+
+	restoreTrack = trackNameChar.get();
+
 	if (SoundDirectorPtr && useSSMusic)
 	{
 		StopBassMusic();
-		playBGM(SoundDirectorPtr, song);
+		playBGM(SoundDirectorPtr, &restoreTrack);
 	}
 }
 
@@ -183,7 +190,8 @@ void Init_Music()
 					dll = Path + BassDlls[i];
 					LoadLibraryA(dll.c_str());
 				}
-				PrintInfo("Super Sonic Mod: Bass library loaded!\n");
+
+				PrintInfo("Bass library loaded!\n");
 			}
 
 		}

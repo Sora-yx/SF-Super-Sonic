@@ -4,8 +4,9 @@
 #include "input.h"
 #include "./Loaders/LostCodeLoader.h"
 #include "bass.h"
+#include <fstream>
 
-
+time_t restoreTrack;
 std::string modPath = "";
 
 extern "C" {
@@ -28,8 +29,10 @@ extern "C" {
 		}
 		else
 		{
-			PrintInfo("SS Mod: Failed to get mod path, music won't work.\n");
+			PrintInfo("Failed to get mod path, music won't work.\n");
 		}
+
+		srand((unsigned)time(&restoreTrack));
 			
 		Init_Config(); //get player config
 		SuperSonic::Init();

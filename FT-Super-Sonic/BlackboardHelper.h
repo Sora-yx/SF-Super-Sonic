@@ -31,20 +31,6 @@ extern int curState;
 #define STATUS_30_POWERBOOST  0x27
 #define STATUS_30_ISLANDSTAGE 0x31
 
-std::vector<int64_t> t;
-
-static bool isValid(int64_t fuck)
-{
-	for (int i = 0; i < t.size(); i++)
-	{
-		if (t.at(i) == fuck)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
 
 class BlackboardHelper
 {
@@ -180,22 +166,13 @@ public:
 		return IsSuper() && curState == 102;
 	}
 
-	inline static bool TestFlags()
-	{
-		for (int64_t i = 0; i < 0x31; i++)
-		{
-			if (CheckWorldFlags((BlackboardHelper::EWorldFlags)i) && !isValid(i))
-			{
-				PrintInfo("new status worldflag: %d\n",  i);
-				t.push_back(i);
-			}
-		}
-
-		return CheckWorldFlags(EWorldFlags::EWorldFlags_IsDead);
-	}
-
 	inline static bool IsDead()
 	{
 		return CheckWorldFlags(EWorldFlags::EWorldFlags_IsDead);
+	}
+
+	inline static bool IsFalling()
+	{
+		return CheckStateFlags(EStateFlags::EStateFlags_IsFall);
 	}
 };

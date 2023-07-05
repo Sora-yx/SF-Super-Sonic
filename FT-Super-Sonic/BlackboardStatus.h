@@ -8,7 +8,7 @@ namespace app::player
 
 	public:
 		INSERT_PADDING(0x4);
-		char isSuper;
+		bool isSuper;
 		INSERT_PADDING(0xB);
 		int64_t StateFlags;
 		int64_t WorldFlags;

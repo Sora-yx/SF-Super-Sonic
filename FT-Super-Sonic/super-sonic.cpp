@@ -66,7 +66,6 @@ void resetSonicContextPtr()
 {
 	SetInGameFalse();
 	sonicContextPtr = nullptr;
-	auraPtr = nullptr;
 	PlayerpressedTransfoBtn = false;
 	isSuper = false;
 }
@@ -106,7 +105,7 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 
 		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper && (nolimit || ring >= 50))
 		{
-			if ((BlackboardHelper::IsJumping() && !PlayerpressedTransfoBtn))
+			if (( (BlackboardHelper::IsJumping() || BlackboardHelper::IsFalling()) && !PlayerpressedTransfoBtn))
 			{
 				ChangeStateParameter(SContext, 1, 0u); //force Sonk to stand state to remove jump ball effect
 				PlayerpressedTransfoBtn = true; //delay a bit the transfo
@@ -168,12 +167,13 @@ void SuperSonic::OnFrames(SonicContext* SContext)
 	if (BlackboardHelper::GetStatus() == nullptr)
 		return;
 
-	BlackboardHelper::TestFlags();
-
 	if (BlackboardHelper::IsDead())
 	{
 		resetSonicContextPtr();
+		return;
 	}
+
+	SetInGameTrue();
 
 	if (!isInGame() || !SContext || !SContext->pSonic)
 		return;
