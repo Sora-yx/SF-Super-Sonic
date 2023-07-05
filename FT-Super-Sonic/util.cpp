@@ -2,6 +2,8 @@
 #include "ss.h"
 #include <vector>
 #include "music.h"
+#include <iostream>
+#include <windows.h>
 
 HANDLE stdoutHandle = nullptr;
 static bool inGame = false;
@@ -116,6 +118,39 @@ int GetKey(std::string s)
 	char ch = s.c_str()[0];
 	return ch;
 }
+
+std::string findFile(const std::string& folderPath, const std::string& fileName) 
+{
+
+	WIN32_FIND_DATAA findData;
+	HANDLE hFind = FindFirstFileA((folderPath + "/*").c_str(), &findData);
+
+	if (hFind == INVALID_HANDLE_VALUE) 
+	{
+		return "";
+	}
+
+	do 
+	{
+		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) 
+		{
+			continue;
+		}
+
+		std::string currentFileName = findData.cFileName;
+		
+		if (currentFileName.find(fileName) != std::string::npos) 
+		{
+			std::string filePath = folderPath + "/" + currentFileName;
+			FindClose(hFind);
+			return filePath;
+		}
+	} while (FindNextFileA(hFind, &findData) != 0);
+
+	FindClose(hFind);
+	return "";
+}
+
 
 void Init_Util()
 {

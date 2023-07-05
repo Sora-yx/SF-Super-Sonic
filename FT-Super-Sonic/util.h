@@ -13,3 +13,5 @@ static constexpr Tret LengthOfArray(const T(&)[N]) noexcept
 {
 	return (Tret)N;
 }
+
+std::string findFile(const std::string& folderPath, const std::string& fileName);

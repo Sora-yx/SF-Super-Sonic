@@ -15,7 +15,7 @@ uint8_t useSSMusic = TRUE;
 
 int currentSuperFormIndex = random;
 
-float vol = 80.0f;
+float vol = 50.0f;
 
 void Init_Config()
 {

@@ -4,7 +4,7 @@ SoundDirector* SoundDirectorPtr = nullptr;
 std::string backupBGMName = "";
 extern int currentIsland;
 static  bool bassinit = false;
-#include "bass.h"
+#include "bass_vgmstream.h"
 
 std::string songArray[] =
 {
@@ -25,7 +25,8 @@ std::string getSSSong()
 {
 	if (currentSuperFormIndex == random)
 	{
-		return songArray[rand() % LengthOfArray(songArray)];
+		std::string s = songArray[rand() % LengthOfArray(songArray)];
+		return s;
 	}
 
 	return songArray[currentSuperFormIndex];
@@ -66,6 +67,7 @@ void StopBassMusic()
 	BASS_StreamFree(basschan);
 }
 
+
 void PlayBassMusic(const char* filename)
 {
 	if (!bassinit)
@@ -77,14 +79,14 @@ void PlayBassMusic(const char* filename)
 		BASS_StreamFree(basschan);
 	}
 
-	if (basschan == 0)
-		basschan = BASS_StreamCreateFile(false, filename, 0, 0, BASS_SAMPLE_LOOP);
+	basschan = BASS_VGMSTREAM_StreamCreate(filename, BASS_SAMPLE_LOOP);
+
 
 	if (basschan != 0)
 	{
 		// Stream opened!
 		BASS_ChannelPlay(basschan, false);
-		BASS_ChannelSetAttribute(basschan, BASS_ATTRIB_VOL, (vol + 10000) / 30000.0f);
+		BASS_ChannelSetAttribute(basschan, BASS_ATTRIB_VOL, (vol + 8000) / 30000.0f);
 		BASS_ChannelSetSync(basschan, BASS_SYNC_END, 0, onTrackEnd, nullptr);
 	}
 }
@@ -107,16 +109,20 @@ HOOK(void, __fastcall, PlayBGM_r, sigPlayBGM(), SoundDirector* in_soundDirector,
 
 void PlayMusic()
 {
-	std::string son = getSSSong();
-	const char* bgmInfo = "DISABLE";
-	const char** song = &bgmInfo;
+	const char* disableBGM = "DISABLE";
+	const char** disableBGM_ = &disableBGM;
 
 	if (SoundDirectorPtr && useSSMusic)
 	{
 		disabled = true;
-		playBGM(SoundDirectorPtr, song); //disable current music
-		std::string fullSong = (std::string)modPath + "music/" + son + ".mp3";
-		PlayBassMusic(fullSong.c_str()); //use bass to play music so we can use custom song without replacing anything
+		playBGM(SoundDirectorPtr, disableBGM_); //disable current music
+		std::string bgmName = getSSSong();
+		std::string folderPath = (std::string)modPath + "music";
+		std::string fullPath = findFile(folderPath, bgmName); //get extension of the music and combine the path with it.
+		const uint32_t size = fullPath.length() + 1;
+		char* trackNameChar = new char[size];
+		strcpy_s(trackNameChar, size, fullPath.c_str());
+		PlayBassMusic(trackNameChar); //use bass to play music so we can use custom song without replacing anything
 	}
 }
 
@@ -139,7 +145,7 @@ void RestoreOriginalMusic()
 	}
 }
 
-//Unused, those libraries are needed to load the VGMStream version of Bass, which would allow a lot more format for music, but this sounds overkill for a simple mod, leftover for now.
+//Those libraries are needed to load the VGMStream version of Bass, which allows a lot more format for music and make loop easier, this is a but overkill for a simple mod, but easy to use so.
 const char* BassDlls[] =
 {
 	"libatrac9.dll",
@@ -169,8 +175,21 @@ void Init_Music()
 			INSTALL_HOOK(PlayBGM_r);
 			INSTALL_HOOK(SoundDirector_Constructor_r);
 			bassinit = !!BASS_Init(-1, 44100, BASS_DEVICE_3D, nullptr, nullptr);
+
+
 			if (bassinit)
+			{
+				BASS_Set3DFactors(0.1f, 0.1f, 0.0f);
+				BASS_SetConfig(BASS_CONFIG_3DALGORITHM, BASS_3DALG_FULL);
+
+				for (int i = 0; i < LengthOfArray(BassDlls); i++)
+				{
+					dll = Path + BassDlls[i];
+					LoadLibraryA(dll.c_str());
+				}
 				PrintInfo("Super Sonic Mod: Bass library loaded!\n");
+			}
+
 		}
 	}
 }

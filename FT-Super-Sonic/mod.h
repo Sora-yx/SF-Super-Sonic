@@ -8,7 +8,6 @@ enum state
 
 enum songs
 {
-	none,
 	sonic2,
 	sonic3,
 	sk,
