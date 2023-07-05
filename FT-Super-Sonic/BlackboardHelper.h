@@ -1,4 +1,5 @@
 #pragma once
+#include "vector"
 
 extern int curState;
 
@@ -29,6 +30,21 @@ extern int curState;
 #define STATUS_30_SIDEVIEW    0x1A
 #define STATUS_30_POWERBOOST  0x27
 #define STATUS_30_ISLANDSTAGE 0x31
+
+std::vector<int64_t> t;
+
+static bool isValid(int64_t fuck)
+{
+	for (int i = 0; i < t.size(); i++)
+	{
+		if (t.at(i) == fuck)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
 
 class BlackboardHelper
 {
@@ -62,6 +78,8 @@ public:
 
 	enum EWorldFlags : int64_t
 	{
+		EWorldFlags_IsDead = 0x01,
+		EWorldFlags_IsDamaged = 0x02,
 		EWorldFlags_IsCyberSpace = 0x1D,
 		EWorldFlags_IsPowerBoost = 0x26,
 		EWorldFlags_IsHeightMapCollision = 0x31
@@ -159,6 +177,25 @@ public:
 
 	inline static bool IsFlyingAsSS()
 	{
-		return isSuper && curState == 102;
+		return IsSuper() && curState == 102;
+	}
+
+	inline static bool TestFlags()
+	{
+		for (int64_t i = 0; i < 0x31; i++)
+		{
+			if (CheckWorldFlags((BlackboardHelper::EWorldFlags)i) && !isValid(i))
+			{
+				PrintInfo("new status worldflag: %d\n",  i);
+				t.push_back(i);
+			}
+		}
+
+		return CheckWorldFlags(EWorldFlags::EWorldFlags_IsDead);
+	}
+
+	inline static bool IsDead()
+	{
+		return CheckWorldFlags(EWorldFlags::EWorldFlags_IsDead);
 	}
 };

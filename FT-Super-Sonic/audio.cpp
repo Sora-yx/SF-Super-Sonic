@@ -67,7 +67,6 @@ void StopBassMusic()
 	BASS_StreamFree(basschan);
 }
 
-
 void PlayBassMusic(const char* filename)
 {
 	if (!bassinit)
@@ -80,7 +79,6 @@ void PlayBassMusic(const char* filename)
 	}
 
 	basschan = BASS_VGMSTREAM_StreamCreate(filename, BASS_SAMPLE_LOOP);
-
 
 	if (basschan != 0)
 	{
@@ -175,8 +173,6 @@ void Init_Music()
 			INSTALL_HOOK(PlayBGM_r);
 			INSTALL_HOOK(SoundDirector_Constructor_r);
 			bassinit = !!BASS_Init(-1, 44100, BASS_DEVICE_3D, nullptr, nullptr);
-
-
 			if (bassinit)
 			{
 				BASS_Set3DFactors(0.1f, 0.1f, 0.0f);

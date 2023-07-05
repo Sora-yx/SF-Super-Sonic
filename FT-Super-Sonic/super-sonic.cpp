@@ -60,14 +60,16 @@ void ForceUnTransfo()
 
 static bool PlayerpressedTransfoBtn = false;
 
+//since the pointers run every frame, they will crash the game when loading / player die due to garbage data, we need to null them to prevent them to reach wrong data.
+//TO Do: Use classes directly from the game to avoid that lol
 void resetSonicContextPtr()
 {
 	SetInGameFalse();
 	sonicContextPtr = nullptr;
+	auraPtr = nullptr;
 	PlayerpressedTransfoBtn = false;
 	isSuper = false;
 }
-
 
 void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 {
@@ -97,7 +99,7 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 	}
 	else
 	{
-		if (!isInGame())
+		if (!isInGame()) 
 			return;
 
 		auto ring = GetRings(SContext);
@@ -163,7 +165,17 @@ void SuperSonic::Descend_CheckInput(GOCKinematicPrams* a)
 
 void SuperSonic::OnFrames(SonicContext* SContext)
 {
-	if (!isInGame() || BlackboardHelper::GetStatus() == nullptr || !SContext || !SContext->pSonic || (size_t*)!SContext->pGOCPlayerKinematicPrams)
+	if (BlackboardHelper::GetStatus() == nullptr)
+		return;
+
+	BlackboardHelper::TestFlags();
+
+	if (BlackboardHelper::IsDead())
+	{
+		resetSonicContextPtr();
+	}
+
+	if (!isInGame() || !SContext || !SContext->pSonic)
 		return;
 
 	isSuper = BlackboardHelper::IsSuper();
