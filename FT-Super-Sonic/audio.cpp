@@ -84,7 +84,7 @@ void PlayBassMusic(const char* filename)
 	{
 		// Stream opened!
 		BASS_ChannelPlay(basschan, false);
-		BASS_ChannelSetAttribute(basschan, BASS_ATTRIB_VOL, (vol + 8000) / 30000.0f);
+		BASS_ChannelSetAttribute(basschan, BASS_ATTRIB_VOL, (vol + 10000) / 30000.0f);
 		BASS_ChannelSetSync(basschan, BASS_SYNC_END, 0, onTrackEnd, nullptr);
 	}
 }
