@@ -87,7 +87,7 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 		return;
 	}
 
-	if ((isKeyPressed(UntransformKey) || isInputPressed(UntransformBtn)) && isSuper) //detransfo
+	if ((isKeyPressed(UntransformKey) || isInputPressed(UntransformBtn)) && isSuper && BlackboardHelper::IsFlyingAsSS()) //detransfo
 	{
 		if (!SetSonicFall(SContext, 0))
 			return;
@@ -97,8 +97,7 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 			SSAuraDestructor(auraPtr);
 		}
 
-		RestoreOriginalMusic();
-		Untransfo(SContext);
+		ForceUnTransfo(false);
 
 		return;
 	}
