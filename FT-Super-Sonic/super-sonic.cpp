@@ -41,7 +41,7 @@ void SuperSonic::Untransfo(SonicContext* SContext)
 	memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
 }
 
-void ForceUnTransfo()
+void ForceUnTransfo(bool resetContext )
 {
 	if (!sonicContextPtr || !isInGame())
 		return;
@@ -55,7 +55,13 @@ void ForceUnTransfo()
 
 	RestoreOriginalMusic();
 	SuperSonic::Untransfo(sonicContextPtr);
-	resetSonicContextPtr();
+
+	if (resetContext)
+		resetSonicContextPtr();
+	else
+	{
+		ChangeStateParameter(sonicContextPtr, 1, 0);
+	}
 }
 
 static bool PlayerpressedTransfoBtn = false;
@@ -138,7 +144,7 @@ void SuperSonic::ringLoss(SonicContext* SContext)
 		}
 		else
 		{
-			SuperSonic::Untransfo(SContext);
+			ForceUnTransfo(false);
 		}
 
 		ringTimer = 0;

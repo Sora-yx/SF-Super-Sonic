@@ -3,7 +3,7 @@
 
 extern SonicContext* sonicContextPtr;
 void resetSonicContextPtr();
-void ForceUnTransfo();
+void ForceUnTransfo(bool resetContext);
 
 void init_SuperSonicHacks();
 void SuperSonic_OnFrames(SonicContext* SContext);

@@ -137,7 +137,7 @@ HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgI
 	{
 		if (isSuper)
 		{
-			ForceUnTransfo();
+			ForceUnTransfo(true);
 		}
 		else
 		{
