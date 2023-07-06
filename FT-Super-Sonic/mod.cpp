@@ -8,6 +8,7 @@
 
 time_t restoreTrack;
 std::string modPath = "";
+static bool IsGameStarted = false;
 
 extern "C" {
 
@@ -45,8 +46,16 @@ extern "C" {
 		SuperSonic::OnFrames(sonicContextPtr);
 	}
 
+	//On Exit seems to be called twice; once on startup and once on actual exit
+	//we make it so our code only run on the second call.
 	__declspec(dllexport) void OnExit()
 	{
-		//BASS_Free();
+		if (!IsGameStarted)
+		{
+			IsGameStarted = true;
+			return;
+		}
+
+		FreeBass();
 	}
 }

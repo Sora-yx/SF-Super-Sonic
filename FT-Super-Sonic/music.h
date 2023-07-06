@@ -7,3 +7,4 @@ void Init_Music();
 void __cdecl PauseBassMusic();
 void ResumeBassMusic();
 void StopBassMusic();
+void FreeBass();

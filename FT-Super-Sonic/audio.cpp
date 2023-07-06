@@ -94,6 +94,12 @@ void PlayBassMusic(const char* filename)
 	}
 }
 
+void FreeBass()
+{
+	if (bassinit)
+		BASS_Free();
+}
+
 #pragma endregion
 
 static bool disabled = false;
