@@ -6,7 +6,7 @@
 #include "bass.h"
 #include <fstream>
 
-time_t restoreTrack;
+time_t t;
 std::string modPath = "";
 static bool IsGameStarted = false;
 
@@ -33,7 +33,7 @@ extern "C" {
 			PrintInfo("Failed to get mod path, music won't work.\n");
 		}
 
-		srand((unsigned)time(&restoreTrack));
+		srand((unsigned)time(&t));
 			
 		Init_Config(); //get player config
 		SuperSonic::Init();
