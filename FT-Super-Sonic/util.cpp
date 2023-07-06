@@ -4,6 +4,7 @@
 #include "music.h"
 #include <iostream>
 #include <windows.h>
+#include "bass_vgmstream.h"
 
 HANDLE stdoutHandle = nullptr;
 static bool inGame = false;
@@ -149,19 +150,20 @@ HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgI
 
 int GetKey(std::string s)
 {
-	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+	std::string copy = s;
 
-	if (s.find("space") != std::string::npos)
+	std::transform(copy.begin(), copy.end(), copy.begin(), ::tolower);
+
+	if (copy.find("space") != std::string::npos)
 	{
  		return VK_SPACE;
 	}
-	else if (s.find("ctrl") != std::string::npos)
+	else if (copy.find("ctrl") != std::string::npos)
 	{
 		return VK_CONTROL;
 	}
 
-	char ch = s.c_str()[0];
-	return ch;
+	return s[0];
 }
 
 std::string findFile(const std::string& folderPath, const std::string& fileName) 
@@ -209,6 +211,14 @@ void DisableInfiniteBoost()
 	WRITE_MEMORY(address + 2, uint8_t, 0x11);
 	WRITE_MEMORY(address + 3, uint8_t, 0x4F);
 	WRITE_MEMORY(address + 4, uint8_t, 0x3C);
+}
+
+void signalHandler(int signal) 
+{
+	PrintInfo("Program is closing.");
+
+	BASS_Free();
+	exit(signal);
 }
 
 void Init_Util()
