@@ -13,15 +13,17 @@ __int64* MsgPtr = nullptr;
 
 enum msg
 {
+	MsgBegingTalkNpc = 8266,
 	MsgTransitCyberStage = 9016,
 	MsgTransitHacking = 9018,
 	MsgTransitIsland,
 	MsgTransitMasterTrialStage,
 	MsgTransitMenu,
 	MsgTransitPractice,
+	MsgEndCyber = 9061,
 	Msgpause = 9114,
 	MsgEndPhaseBRush = 8427, //more like end regular combat I think
-	MsgEndCyber = 8578,
+
 
 };
 
@@ -57,7 +59,7 @@ void SetInGameTrue()
 {
 	if (triggerEnableGame)
 	{
-		if (++timerDelay == 50)
+		if (++timerDelay == 130)
 		{
 			inGame = true;
 			timerDelay = 0;
@@ -120,24 +122,23 @@ static bool isValid(int64_t msg)
 
 HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgID)
 {
-	if (msgID == Msgpause) 
+	if (msgID == MsgBegingTalkNpc)
+	{
+		if (isSuper)
+			ForceUnTransfo(false);
+	}
+	else if (msgID == Msgpause) 
 	{
 		PauseBassMusic();
 		ResetValues();
 	}
-	else if (msgID >= MsgTransitCyberStage && msgID <= MsgTransitPractice)
+	else if ( (msgID >= MsgTransitCyberStage && msgID <= MsgTransitPractice))
 	{
 		StopBassMusic();
 		ResetValues();
 	}
 
-	if (!isValid(msgID))
-	{
-		PrintInfo("new msg: %d", msgID);
-		msgV.push_back(msgID);
-	}
-
-	if (msgID == MsgEndCyber) 
+	if (msgID == 8603) //end cyberspace
 	{
 		if (isSuper)
 		{

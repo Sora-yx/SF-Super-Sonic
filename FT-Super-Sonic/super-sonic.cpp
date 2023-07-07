@@ -212,10 +212,6 @@ void RemoveRings(SonicContext* SContext)
 
 HOOK(char, __fastcall, ChangeStateParameter_r, 0x1408033E0, SonicContext* a1, __int64 a2, __int64 a3)
 {
-#ifndef _DEBUG
-	PrintInfo("Set New State Param: %d\n", a2);
-#endif // !DEBUG
-
 	curState = a2;
 	return originalChangeStateParameter_r(a1, a2, a3);
 }
