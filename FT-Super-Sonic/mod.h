@@ -19,6 +19,7 @@ enum songs
 	ft1,
 	ft2,
 	maintheme,
+	titans,
 	random,
 };
 

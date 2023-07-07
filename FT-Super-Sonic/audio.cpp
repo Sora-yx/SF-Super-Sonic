@@ -33,6 +33,10 @@ std::string getSSSong()
 		std::string s = songArray[rand() % LengthOfArray(songArray)];
 		return s;
 	}
+	else if (currentSuperFormIndex == titans)
+	{
+		return songArray[rand() % 3 + ft0];
+	}
 
 	return songArray[currentSuperFormIndex];
 }
@@ -109,7 +113,7 @@ HOOK(void, __fastcall, PlayBGM_r, sigPlayBGM(), SoundDirector* in_soundDirector,
 	if (!disabled)
 	{
 		StopBassMusic();
-		backupBGMName = bgmName[0]; 
+		backupBGMName = bgmName[0];
 	}
 
 	originalPlayBGM_r(in_soundDirector, bgmName);

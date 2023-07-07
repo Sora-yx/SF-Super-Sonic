@@ -13,6 +13,12 @@ __int64* MsgPtr = nullptr;
 
 enum msg
 {
+	MsgTransitCyberStage = 9016,
+	MsgTransitHacking = 9018,
+	MsgTransitIsland,
+	MsgTransitMasterTrialStage,
+	MsgTransitMenu,
+	MsgTransitPractice,
 	Msgpause = 9114,
 	MsgEndPhaseBRush = 8427, //more like end regular combat I think
 	MsgEndCyber = 8578,
@@ -93,19 +99,6 @@ HOOK(__int64, __fastcall, GetCurIsland_r, 0x14023A250, __int64 a1)
 	return currentIsland;
 }
 
-HOOK(__int64, __fastcall, TrainingStart_r, 0x1401AFB30, __int64 a1, __int64 a2)
-{
-	resetSonicContextPtr();
-	return originalTrainingStart_r(a1, a2);
-}
-
-
-HOOK(__int64, __fastcall, TrainingStart2_r, 0x14764D920, __int64 a1)
-{
-	resetSonicContextPtr();
-	return originalTrainingStart2_r(a1);
-}
-
 #pragma endregion
 
 
@@ -130,7 +123,18 @@ HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgI
 	if (msgID == Msgpause) 
 	{
 		PauseBassMusic();
-		resetSonicContextPtr();
+		ResetValues();
+	}
+	else if (msgID >= MsgTransitCyberStage && msgID <= MsgTransitPractice)
+	{
+		StopBassMusic();
+		ResetValues();
+	}
+
+	if (!isValid(msgID))
+	{
+		PrintInfo("new msg: %d", msgID);
+		msgV.push_back(msgID);
 	}
 
 	if (msgID == MsgEndCyber) 
@@ -141,7 +145,7 @@ HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgI
 		}
 		else
 		{
-			resetSonicContextPtr();
+			ResetValues();
 		}
 	}
 	
@@ -213,13 +217,6 @@ void DisableInfiniteBoost()
 	WRITE_MEMORY(address + 4, uint8_t, 0x3C);
 }
 
-void signalHandler(int signal) 
-{
-	PrintInfo("Program is closing.");
-
-	BASS_Free();
-	exit(signal);
-}
 
 void Init_Util()
 {
@@ -231,9 +228,6 @@ void Init_Util()
 
 	INSTALL_HOOK(CyberStageChallengePlayState_Allocator_r);
 
-	INSTALL_HOOK(TrainingStart_r);
-	INSTALL_HOOK(TrainingStart2_r);
-
 	//used to check that the game has been paused
 	INSTALL_HOOK(SetNewMSG_r);
 
@@ -241,4 +235,5 @@ void Init_Util()
 
 	//INSTALL_HOOK(BattleRushPlayStateAllocator_r);	
 	//INSTALL_HOOK(BattleRushNextPhase_r); //force SS to detransfo between battle rush transition (fix crashes)
+
 }

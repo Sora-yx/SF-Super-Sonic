@@ -11,7 +11,7 @@ SonicContext* sonicContextPtr = nullptr;
 SSEffAuraS* auraPtr = nullptr;
 static int ringTimer = 0;
 bool isSuper = false;
-char statusBackup[sizeof(BlackboardStatus)] = {0};
+char statusBackup = 0;
 uint8_t inputDelay = 0;
 int curState = 0;
 //we hack the function that checks if the player is Super Sonic to copy SonicContext instance
@@ -31,17 +31,17 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 
 void SuperSonic::Transfo(SonicContext* SContext)
 {
-	memcpy(statusBackup, SContext->pBlackBoardStatus, sizeof(BlackboardStatus));	
+	statusBackup = SContext->pBlackBoardStatus->pad35[26];
 	TriggerSuperSonic(SContext, true);
 }
 
 void SuperSonic::Untransfo(SonicContext* SContext)
 {
 	TriggerSuperSonic(SContext, false);
-	memcpy(SContext->pBlackBoardStatus, statusBackup, sizeof(BlackboardStatus)); //fix floaty physics when detransform
+	SContext->pBlackBoardStatus->pad35[26] = statusBackup;  //fix floaty physics when detransform
 }
 
-void ForceUnTransfo(bool resetContext )
+void ForceUnTransfo(bool resetValues)
 {
 	if (!sonicContextPtr || !isInGame())
 		return;
@@ -53,25 +53,27 @@ void ForceUnTransfo(bool resetContext )
 		SSAuraDestructor(auraPtr);
 	}
 
-	RestoreOriginalMusic();
 	SuperSonic::Untransfo(sonicContextPtr);
 
-	if (resetContext)
-		resetSonicContextPtr();
+
+	if (resetValues)
+	{
+		ResetValues();
+	}
 	else
 	{
 		ChangeStateParameter(sonicContextPtr, 1, 0);
 	}
+
+	RestoreOriginalMusic();
 }
 
 static bool PlayerpressedTransfoBtn = false;
 
-//since the pointers run every frame, they will crash the game when loading / player die due to garbage data, we need to null them to prevent them to reach wrong data.
 //TO Do: Use classes directly from the game to avoid that lol
-void resetSonicContextPtr()
+void ResetValues()
 {
 	SetInGameFalse();
-	sonicContextPtr = nullptr;
 	PlayerpressedTransfoBtn = false;
 	isSuper = false;
 }
@@ -120,9 +122,9 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 
 		if (PlayerpressedTransfoBtn)
 		{
-			PlayMusic();
 			SuperSonic::Transfo(SContext);
 			PlayerpressedTransfoBtn = false;
+			PlayMusic();
 			return;
 		}
 	}
@@ -167,18 +169,20 @@ void SuperSonic::Descend_CheckInput(GOCKinematicPrams* a)
 	}
 }
 
-void SuperSonic::OnFrames(SonicContext* SContext)
+void SuperSonic::OnFrames()
 {
 	if (BlackboardHelper::GetStatus() == nullptr)
 		return;
 
 	if (BlackboardHelper::IsDead())
 	{
-		resetSonicContextPtr();
+		ResetValues();
 		return;
 	}
 
 	SetInGameTrue();
+
+	auto SContext = sonicContextPtr;
 
 	if (!isInGame() || !SContext || !SContext->pSonic)
 		return;
@@ -251,9 +255,9 @@ HOOK(char, __fastcall, titanfightCheck_r, sig_TitanSSManage(), __int64 a1, __int
 void SuperSonic::Init() 
 {
 
-	INSTALL_HOOK(isSuperSonic_r);
 	WRITE_NOP(sigIsNotCyberSpace(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 
+	INSTALL_HOOK(isSuperSonic_r);
 	INSTALL_HOOK(SuperSonicEffectAura_r); //used to delete super aura when detransform
 	INSTALL_HOOK(ChangeStateParameter_r);
 

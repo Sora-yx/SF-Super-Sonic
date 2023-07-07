@@ -1,12 +1,8 @@
 #pragma once
 
 
-extern SonicContext* sonicContextPtr;
-void resetSonicContextPtr();
+void ResetValues();
 void ForceUnTransfo(bool resetContext);
-
-void init_SuperSonicHacks();
-void SuperSonic_OnFrames(SonicContext* SContext);
 
 class SuperSonic
 {
@@ -16,8 +12,7 @@ public:
 	static void ringLoss(SonicContext* Scontext);
 	static void Ascend_CheckInput(SonicContext* Scontext, GOCKinematicPrams* param);
 	static void Descend_CheckInput(GOCKinematicPrams* param);
-	static void Ground_Check(SonicContext* SContext);
 	static void Transfo(SonicContext* SContext);
 	static void Untransfo(SonicContext* SContext);
-	static void OnFrames(SonicContext* SContext);
+	static void OnFrames();
 };

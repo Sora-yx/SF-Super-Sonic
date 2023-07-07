@@ -43,7 +43,7 @@ extern "C" {
 
 	__declspec(dllexport) void OnFrame()
 	{
-		SuperSonic::OnFrames(sonicContextPtr);
+		SuperSonic::OnFrames();
 	}
 
 	//On Exit seems to be called twice; once on startup and once on actual exit
