@@ -132,6 +132,6 @@ static FUNCTION_PTR(void, __fastcall, playBGM, sigPlayBGM(), SoundDirector* a1, 
 static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
 static FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
 static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
-static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1408033E0, SonicContext* Sonk, __int64 actionID, __int64 a3);
+static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1408AAB30, SonicContext* Sonk, __int64 actionID, __int64 a3);
 static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, sigsub_SSAuraDestructor(), SSEffAuraS* a1);
 static FUNCTION_PTR(__int64, __fastcall, SetNewMSG, sigSetNewMsg(), __int64* a1, int a2);

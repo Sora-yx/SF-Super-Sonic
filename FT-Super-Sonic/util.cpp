@@ -71,31 +71,32 @@ void SetInGameTrue()
 #pragma region GameState Hooks
 
 
-//failed to get sigscan :(
-HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401CD4E0, GameModeStagePlay* a1)
+//updated
+HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401F05D0, GameModeStagePlay* a1)
 {
 	ResumeBassMusic();
 	triggerEnableGame = true;
 	return  originalGameStatePlayAllocator_r(a1);;
 }
 
-//failed to get sig for that one (40 53 \n 48 83 EC 20)
-HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x1473AB790, __int64 a1)
+//updated
+HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x14771EBA0, __int64 a1)
 {
 	ResumeBassMusic();
 	triggerEnableGame = true;
 	return  originalCyberSpacePlayStateAllocator_r(a1);
 }
 
-HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x14019B860, __int64 a1)
+//updated
+HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x1401BB730, __int64 a1)
 {
 	ResumeBassMusic();
 	triggerEnableGame = true;
 	return originalCyberStageChallengePlayState_Allocator_r(a1);
 }
 
-//sig scan doesn't seem to work for that one  ( 8B 81 A8 00 00 00 )
-HOOK(__int64, __fastcall, GetCurIsland_r, 0x14023A250, __int64 a1)
+//updated
+HOOK(__int64, __fastcall, GetCurIsland_r, 0x14025F8C0, __int64 a1)
 {
 	currentIsland = originalGetCurIsland_r(a1);
 	return currentIsland;
@@ -201,21 +202,6 @@ std::string findFile(const std::string& folderPath, const std::string& fileName)
 
 	FindClose(hFind);
 	return "";
-}
-
-void SetInfiniteBoost()
-{
-	WRITE_NOP(sig_SetBoostValue(), 0x5);
-}
-
-void DisableInfiniteBoost()
-{
-	intptr_t address = (intptr_t)sig_SetBoostValue();
-	WRITE_MEMORY(address, uint8_t, 0xF3);
-	WRITE_MEMORY(address + 1, uint8_t, 0xF);
-	WRITE_MEMORY(address + 2, uint8_t, 0x11);
-	WRITE_MEMORY(address + 3, uint8_t, 0x4F);
-	WRITE_MEMORY(address + 4, uint8_t, 0x3C);
 }
 
 
