@@ -2,19 +2,19 @@
 
 namespace app::player
 {
-	class alignas(16) BlackboardStatus : public BlackboardContent
+	class alignas(0x10) BlackboardStatus : public BlackboardContent
 	{
 		inline static const char* ms_pBlackboardName = "BlackboardStatus";
 
 	public:
 		INSERT_PADDING(0x4);
 		bool isSuper;
-		INSERT_PADDING(0xB);
+		INSERT_PADDING(39); //44 bytes here
 		int64_t StateFlags;
-		int64_t WorldFlags;
-		INSERT_PADDING(0xF0);
-		bool IsIslandSideView;
-		INSERT_PADDING(0x4F);
+		int64_t WorldFlags; //60 bytes here
+		INSERT_PADDING(0xF0); //300
+		bool IsIslandSideView; //301
+		INSERT_PADDING(83);
 
 		size_t GetNameHash() override
 		{

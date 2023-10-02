@@ -3,7 +3,7 @@
 
 extern int curState;
 
-#define STATUS_PARAM_BOOST          0x01
+#define STATUS_PARAM_BOOST          0x00
 #define STATUS_PARAM_RECOVERYJUMP   0x02
 #define STATUS_PARAM_AIRBOOST       0x04
 #define STATUS_PARAM_GRINDJUMP      0x06
@@ -37,7 +37,7 @@ class BlackboardHelper
 public:
 	enum EStateFlags : int64_t
 	{
-		EStateFlags_IsBoost = 0x01,
+		EStateFlags_IsBoost = 0x00,
 		EStateFlags_IsRecoveryJump = 0x02,
 		EStateFlags_IsAirBoost = 0x04,
 		EStateFlags_IsGrindJump = 0x06,
@@ -66,9 +66,10 @@ public:
 	{
 		EWorldFlags_IsDead = 0x01,
 		EWorldFlags_IsDamaged = 0x02,
-		EWorldFlags_IsCyberSpace = 0x1D,
-		EWorldFlags_IsPowerBoost = 0x26,
-		EWorldFlags_IsHeightMapCollision = 0x31
+		EWorldFlags_IsCyberSpace = 0x1E,
+		EWorldFlags_IsPowerBoost = 0x28,
+		EWorldFlags_IsHeightMapCollision = 0x31,
+		EWorldFlags_IsBattle = 0x3A
 	};
 
 	inline static app::player::BlackboardStatus* GetStatus()
@@ -163,7 +164,8 @@ public:
 
 	inline static bool IsFlyingAsSS()
 	{
-		return IsSuper() && curState == 102;
+		PrintInfo("Current State: %d \n", curState);
+		return IsSuper() && curState == 103;
 	}
 
 	inline static bool IsDead()

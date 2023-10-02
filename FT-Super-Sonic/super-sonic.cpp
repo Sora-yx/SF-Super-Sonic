@@ -105,13 +105,13 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 	}
 	else
 	{
-		if (!isInGame()) 
-			return;
+
 
 		auto ring = GetRings(SContext);
 
 		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper && (nolimit || ring >= 50))
 		{
+			
 			if (( (BlackboardHelper::IsJumping() || BlackboardHelper::IsFalling()) && !PlayerpressedTransfoBtn))
 			{
 				ChangeStateParameter(SContext, 1, 0u); //force Sonk to stand state to remove jump ball effect
@@ -184,8 +184,12 @@ void SuperSonic::OnFrames()
 
 	auto SContext = sonicContextPtr;
 
-	if (!isInGame() || !SContext || !SContext->pSonic)
+	if (!SContext || !SContext->pSonic)
 		return;
+
+	auto stat = BlackboardHelper::GetStatus();
+
+
 
 	isSuper = BlackboardHelper::IsSuper();
 
@@ -210,7 +214,7 @@ void RemoveRings(SonicContext* SContext)
 	SubRing(SContext, 1);
 }
 
-HOOK(char, __fastcall, ChangeStateParameter_r, 0x1408033E0, SonicContext* a1, __int64 a2, __int64 a3)
+HOOK(char, __fastcall, ChangeStateParameter_r, 0x1408AAB30, SonicContext* a1, __int64 a2, __int64 a3)
 {
 	curState = a2;
 	return originalChangeStateParameter_r(a1, a2, a3);
