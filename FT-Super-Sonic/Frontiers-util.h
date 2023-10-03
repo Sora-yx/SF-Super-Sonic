@@ -29,12 +29,12 @@ struct __declspec(align(0x10)) Sonic
 
 struct __declspec(align(0x10)) BlackboardStatus
 {
-	INSERT_PADDING(0x10);
+	INSERT_PADDING(44);
 	int64_t StateFlags;
 	int64_t WorldFlags;
 	INSERT_PADDING(0xF0);
 	bool IsIslandSideView;
-	INSERT_PADDING(0x4F);
+	INSERT_PADDING(83);
 };
 
 struct __declspec(align(0x10)) GOCPlayerHsm

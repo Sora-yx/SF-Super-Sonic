@@ -11,7 +11,7 @@ SonicContext* sonicContextPtr = nullptr;
 SSEffAuraS* auraPtr = nullptr;
 static int ringTimer = 0;
 bool isSuper = false;
-char statusBackup = 0;
+char statusBackup[10] = { 0 };
 uint8_t inputDelay = 0;
 int curState = 0;
 //we hack the function that checks if the player is Super Sonic to copy SonicContext instance
@@ -31,14 +31,16 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 
 void SuperSonic::Transfo(SonicContext* SContext)
 {
-	statusBackup = SContext->pBlackBoardStatus->pad35[26];
+	//statusBackup = SContext->pBlackBoardStatus->pad35[26];
+	memcpy(statusBackup, SContext->pBlackBoardStatus->pad35, sizeof(statusBackup));
 	TriggerSuperSonic(SContext, true);
 }
 
 void SuperSonic::Untransfo(SonicContext* SContext)
 {
 	TriggerSuperSonic(SContext, false);
-	SContext->pBlackBoardStatus->pad35[26] = statusBackup;  //fix floaty physics when detransform
+	memcpy(SContext->pBlackBoardStatus->pad35, statusBackup, sizeof(statusBackup));
+	//SContext->pBlackBoardStatus->pad35[26] = statusBackup;  //fix floaty physics when detransform
 }
 
 void ForceUnTransfo(bool resetValues)
