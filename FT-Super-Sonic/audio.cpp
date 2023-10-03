@@ -138,7 +138,7 @@ void PlayMusic()
 }
 
 //unsupported sig scan :(
-HOOK(SoundDirector*, __fastcall, SoundDirector_Constructor_r, 0x140922C40, SoundDirector* a1)
+HOOK(SoundDirector*, __fastcall, SoundDirector_Constructor_r, 0x1409F7F70, SoundDirector* a1)
 {
 	SoundDirectorPtr = originalSoundDirector_Constructor_r(a1);
 	return SoundDirectorPtr;
