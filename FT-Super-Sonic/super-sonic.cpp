@@ -208,12 +208,10 @@ void SuperSonic::OnFrames()
 
 	auto SContext = sonicContextPtr;
 
-	if (!SContext || !SContext->pSonic)
+	if (!isInGame() || !SContext || !SContext->pSonic)
 		return;
 
 	auto stat = BlackboardHelper::GetStatus();
-
-
 
 	isSuper = BlackboardHelper::IsSuper();
 
