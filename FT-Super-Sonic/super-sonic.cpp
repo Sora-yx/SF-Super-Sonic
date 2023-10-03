@@ -155,19 +155,41 @@ void SuperSonic::ringLoss(SonicContext* SContext)
 	}
 }
 
+static const float spdCap = 100.0f;
+static const float minimSpd = 20.0f;
+static float ascendSpd = minimSpd;
+
 void SuperSonic::Ascend_CheckInput(SonicContext* sonk, GOCKinematicPrams* a)
 {
 	if (isKeyPressed(AscendKey) || isInputPressed(AscendBtn))
 	{	
-		a->spdY = 50.0f;
+		a->spdY = ascendSpd < spdCap ? ascendSpd++ : ascendSpd;
+	}
+	else
+	{
+		if (ascendSpd > minimSpd)
+			ascendSpd--;
+		else
+			ascendSpd = minimSpd;
 	}
 }
+
+static const float minimSpdDesc = -20.0f;
+static const float spdCapDesc = -100.0f;
+static float descendSpd = minimSpdDesc;
 
 void SuperSonic::Descend_CheckInput(GOCKinematicPrams* a)
 {
 	if (isKeyPressed(DescendKey) || isInputPressed(DescendBtn))
 	{
-		a->spdY = -50.0f;
+		a->spdY = descendSpd > spdCapDesc ? descendSpd-- : descendSpd;
+	}
+	else
+	{
+		if (descendSpd < minimSpdDesc)
+			descendSpd++;
+		else
+			descendSpd = minimSpdDesc;
 	}
 }
 

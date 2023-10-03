@@ -164,7 +164,6 @@ public:
 
 	inline static bool IsFlyingAsSS()
 	{
-		PrintInfo("Current State: %d \n", curState);
 		return IsSuper() && curState == 103;
 	}
 
