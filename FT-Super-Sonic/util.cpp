@@ -21,10 +21,8 @@ enum msg
 	MsgTransitMenu,
 	MsgTransitPractice,
 	MsgEndCyber = 9061,
-	Msgpause = 9114,
+	Msgpause = 9178, //updated but not sure, rest need to be done
 	MsgEndPhaseBRush = 8427, //more like end regular combat I think
-
-
 };
 
 void PrintInfo(const char* text, ...)
@@ -123,6 +121,13 @@ static bool isValid(int64_t msg)
 
 HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgID)
 {
+
+	if (!isValid(msgID))
+	{
+		PrintInfo("msg ID: %d\n", msgID);
+		msgV.push_back(msgID);
+	}
+
 	if (msgID == MsgBegingTalkNpc)
 	{
 		if (isSuper)

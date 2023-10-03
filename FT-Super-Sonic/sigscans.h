@@ -55,8 +55,6 @@ SIG_SCAN
 	"xxxxxxxxxxx????xxx"
 )
 
-//ISSUE IS SOMEWHERE HEREEEEE
-
 //updated
 SIG_SCAN
 (
@@ -88,9 +86,9 @@ SIG_SCAN
 SIG_SCAN
 (
 	sigSetNewMsg,
-	0x140ED8810,
-	"\x48\x89\x5C\x24\x08\x57\x48\x83\xEC\x20\x48\x8B\x02\x48\x8B\xFA\xBA\x48", 
-	"xxxxxxxxxxxxxxxxxx"
+	0x1528F51A0,
+	"\x48\x8D\x05\xCC\xCC\xCC\xCC\x89\x51\x08\x48\x89\x01\x31", 
+	"xxx????xxxxxxx"
 )
 
 
@@ -112,7 +110,6 @@ SIG_SCAN
 	"xxxxxxxxxxxxxxxx"
 )
 
-//ISSUE END
 
 
 /*/SIG_SCAN
