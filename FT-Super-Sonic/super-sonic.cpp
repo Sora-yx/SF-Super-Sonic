@@ -38,11 +38,11 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 void SuperSonic::TransfoSS2(SonicContext* SContext)
 {	
 	auto pPlayer = PlayerHsmContextGetPlayer((long long*)SContext);
-	auto pPlayerVisualGocSaticClass = GOCPlayerVisualGetStaticClass();
+	auto pPlayerVisualGocStaticClass = GOCPlayerVisualGetStaticClass();
 	
-	if (pPlayer && pPlayerVisualGocSaticClass)
+	if (pPlayer && pPlayerVisualGocStaticClass)
 	{
-		auto pPlayerVisualGoc = GameObjectGetGoc(pPlayer, (__int64)pPlayerVisualGocSaticClass);
+		auto pPlayerVisualGoc = GameObjectGetGoc(pPlayer, (__int64)pPlayerVisualGocStaticClass);
 
 		auto pVisualSuperSonic = GOCPlayerVisualGetVisualByHashName(
 			pPlayerVisualGoc,
@@ -99,7 +99,6 @@ void ForceUnTransfo(bool resetValues)
 {
 	if (!sonicContextPtr || !isInGame())
 		return;
-
 
 	SetSonicFall(sonicContextPtr, 0);
 
