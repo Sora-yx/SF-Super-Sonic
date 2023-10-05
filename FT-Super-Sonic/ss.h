@@ -15,5 +15,7 @@ public:
 	static void Descend_CheckInput(GOCKinematicPrams* param);
 	static void Transfo(SonicContext* SContext);
 	static void Untransfo(SonicContext* SContext);
+	static void TransfoSS2(SonicContext* SContext);
+	static void UntransfoSS2(SonicContext* SContext);
 	static void OnFrames();
 };

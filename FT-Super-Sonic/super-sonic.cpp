@@ -11,6 +11,7 @@ SonicContext* sonicContextPtr = nullptr;
 SSEffAuraS* auraPtr = nullptr;
 static int ringTimer = 0;
 bool isSuper = false;
+bool isSS2 = false;
 char statusBackup[10] = { 0 };
 uint8_t inputDelay = 0;
 int curState = 0;
@@ -33,6 +34,50 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 	return auraPtr;
 }
 
+
+void SuperSonic::TransfoSS2(SonicContext* SContext)
+{	
+	auto pPlayer = PlayerHsmContextGetPlayer((long long*)SContext);
+	auto pPlayerVisualGocSaticClass = GOCPlayerVisualGetStaticClass();
+	
+	if (pPlayer && pPlayerVisualGocSaticClass)
+	{
+		auto pPlayerVisualGoc = GameObjectGetGoc(pPlayer, (__int64)pPlayerVisualGocSaticClass);
+
+		auto pVisualSuperSonic = GOCPlayerVisualGetVisualByHashName(
+			pPlayerVisualGoc,
+			*(int*)pVisualSuperSonicHash);
+
+		if (pVisualSuperSonic)
+			VisualChangeToSuperSonic2(pVisualSuperSonic);
+
+		isSS2 = true;
+	}
+}
+
+void SuperSonic::UntransfoSS2(SonicContext* SContext)
+{
+	if (!isSS2)
+		return;
+
+	auto pPlayer = PlayerHsmContextGetPlayer((long long*)SContext);
+	auto pPlayerVisualGocSaticClass = GOCPlayerVisualGetStaticClass();
+
+	if (pPlayer && pPlayerVisualGocSaticClass)
+	{
+		auto pPlayerVisualGoc = GameObjectGetGoc(pPlayer, (__int64)pPlayerVisualGocSaticClass);
+
+		auto pVisualSuperSonic = GOCPlayerVisualGetVisualByHashName(
+			pPlayerVisualGoc,
+			*(int*)pVisualSuperSonicHash);
+
+		if (pVisualSuperSonic)
+			VisualChangeToSuperSonic(pVisualSuperSonic);
+
+		isSS2 = false;
+	}
+
+}
 
 void SuperSonic::Transfo(SonicContext* SContext)
 {
@@ -63,6 +108,7 @@ void ForceUnTransfo(bool resetValues)
 		SSAuraDestructor(auraPtr);
 	}
 
+	SuperSonic::UntransfoSS2(sonicContextPtr);
 	SuperSonic::Untransfo(sonicContextPtr);
 
 
@@ -100,7 +146,13 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 	}
 
 	if ((isKeyPressed(UntransformKey) || isInputPressed(UntransformBtn)) && isSuper && BlackboardHelper::IsFlyingAsSS()) //detransfo
-	{
+	{		
+		if (isSS2)
+		{
+			UntransfoSS2(SContext);
+			return;
+		}
+
 		if (!SetSonicFall(SContext, 0))
 			return;
 
@@ -116,29 +168,46 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 	else
 	{
 
-
 		auto ring = GetRings(SContext);
 
-		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper)
+		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)))
 		{
 
-			if (( hedgeMayCry && ring >= 100 || !hedgeMayCry && nolimit || !hedgeMayCry && ring >= 50))
+			if (!isSuper)
 			{
-				if (((BlackboardHelper::IsJumping() || BlackboardHelper::IsFalling()) && !PlayerpressedTransfoBtn))
+				if ((hedgeMayCry && ring >= 100 || !hedgeMayCry && nolimit || !hedgeMayCry && ring >= 50))
 				{
-					ChangeStateParameter(SContext, 1, 0u); //force Sonk to stand state to remove jump ball effect
-					PlayerpressedTransfoBtn = true; //delay a bit the transfo
-					return;
+					if (((BlackboardHelper::IsJumping() || BlackboardHelper::IsFalling()) && !PlayerpressedTransfoBtn))
+					{
+						ChangeStateParameter(SContext, 1, 0u); //force Sonk to stand state to remove jump ball effect
+						PlayerpressedTransfoBtn = true; //delay a bit the transfo
+						return;
+					}
 				}
 			}
+			else
+			{
+				if (!isSS2)
+				{
+					if ((hedgeMayCry && ring >= 200 || !hedgeMayCry && nolimit || !hedgeMayCry && ring >= 100))
+					{
+						SuperSonic::TransfoSS2(SContext);
+						return;
+					}
+				}
+			}
+
 		}
 
 		if (PlayerpressedTransfoBtn)
 		{
-			SuperSonic::Transfo(SContext);
-			PlayerpressedTransfoBtn = false;
-			PlayMusic();
-			return;
+			if (!isSuper)
+			{
+				SuperSonic::Transfo(SContext);
+				PlayerpressedTransfoBtn = false;
+				PlayMusic();
+				return;
+			}
 		}
 	}
 }
@@ -303,7 +372,6 @@ void SuperSonic::InitSS2()
 {
 	//0x140151BF0
 	//SS2 research
-	WRITE_NOP(0x1409DE14F, 0x2); //force SS2 visual to show up(?)
 	WRITE_NOP(0x14B754155, 0x2); //force pac file to always load
 }
 
