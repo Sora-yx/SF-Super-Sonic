@@ -9,6 +9,7 @@
 time_t t;
 std::string modPath = "";
 static bool IsGameStarted = false;
+bool hedgeMayCry = false;
 
 extern "C" {
 

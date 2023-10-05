@@ -135,3 +135,5 @@ static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicCont
 static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1408AAB30, SonicContext* Sonk, __int64 actionID, __int64 a3);
 static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, sigsub_SSAuraDestructor(), SSEffAuraS* a1);
 static FUNCTION_PTR(__int64, __fastcall, SetNewMSG, sigSetNewMsg(), __int64* a1, int a2);
+
+static FUNCTION_PTR(__int64, __fastcall, msgConstructor, 0x140ED8770, __int64 a1, __int64 a2);

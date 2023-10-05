@@ -28,6 +28,7 @@ void Init_Config()
 	}
 
 	nolimit = reader.GetBoolean("Mod", "nolimit", nolimit);
+	hedgeMayCry = reader.GetBoolean("Mod", "hedgeMayCry", hedgeMayCry);
 
 	useSSMusic = (uint8_t)reader.GetBoolean("Audio", "useSSMusic", useSSMusic);
 	vol = reader.GetFloat("Audio", "vol", vol);

@@ -8,6 +8,7 @@ class SuperSonic
 {
 public:
 	static void Init();
+	static void InitSS2();
 	static void Transfo_CheckInput(SonicContext* Scontext);
 	static void ringLoss(SonicContext* Scontext);
 	static void Ascend_CheckInput(SonicContext* Scontext, GOCKinematicPrams* param);

@@ -28,6 +28,7 @@ extern int AscendBtn;
 extern int DescendBtn;
 extern int TransformBtn;
 extern int UntransformBtn;
+extern bool hedgeMayCry;
 
 extern std::string AscendKey;
 extern std::string DescendKey;

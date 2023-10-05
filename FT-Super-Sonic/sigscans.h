@@ -1,7 +1,6 @@
 #pragma once
 
 
-//updated
 SIG_SCAN
 (
 	sigTriggerSS,
@@ -10,7 +9,7 @@ SIG_SCAN
 	"xxxxxxxxxxxxxxxxx????x"
 )
 
-//updated
+
 SIG_SCAN
 (
 	sigGetRings,
@@ -19,7 +18,7 @@ SIG_SCAN
 	"xxxxxxx"
 )
 
-//updated
+
 SIG_SCAN
 (
 	sigSubRings,
@@ -28,7 +27,7 @@ SIG_SCAN
 	"xxxxx"
 )
 
-//updated
+
 SIG_SCAN
 (
 	sigSetSonicFall,
@@ -37,7 +36,7 @@ SIG_SCAN
 	"xxxxxxxxxxxxxxxxxxxxxxx"
 )
 
-//updated
+
 SIG_SCAN
 (
 	sigIsSuperSonic,
@@ -46,7 +45,7 @@ SIG_SCAN
 	"xxxxxxxxx????x"
 )
 
-//updated
+
 SIG_SCAN
 (
 	sigIsNotCyberSpace,
@@ -55,7 +54,7 @@ SIG_SCAN
 	"xxxxxxxxxxx????xxx"
 )
 
-//updated
+
 SIG_SCAN
 (
 	sigsub_SSEFfectAura,
@@ -64,7 +63,7 @@ SIG_SCAN
 	"xxxxxxxxxx????xxx????xxxx"
 )
 
-//updated
+
 SIG_SCAN
 (
 	sigsub_SSAuraDestructor,
@@ -73,7 +72,7 @@ SIG_SCAN
 	"xxxxxxxxxx"
 )
 
-//updated
+
 SIG_SCAN
 (
 	sigPlayBGM,
@@ -82,7 +81,6 @@ SIG_SCAN
 	"xxxxxxx"
 );
 
-//updated
 SIG_SCAN
 (
 	sigSetNewMsg,
@@ -92,7 +90,6 @@ SIG_SCAN
 )
 
 
-//updated
 SIG_SCAN
 (
 	sigGetCurIsland_,
@@ -101,7 +98,6 @@ SIG_SCAN
 	"x????xxxxx"
 )
 
-//updated
 SIG_SCAN
 (
 	sig_TitanSSManage,

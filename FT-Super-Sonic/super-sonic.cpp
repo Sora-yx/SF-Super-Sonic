@@ -16,6 +16,10 @@ uint8_t inputDelay = 0;
 int curState = 0;
 //we hack the function that checks if the player is Super Sonic to copy SonicContext instance
 
+//support for "Hedgehog May Cry" mod 
+static const int timerUnTransfoHedgeMayCryCD = 60 * 45;
+static int timerUnTransfoHedgeMayCry = 0;
+
 HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
 {
 	sonicContextPtr = sCont;
@@ -29,15 +33,18 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 	return auraPtr;
 }
 
+
 void SuperSonic::Transfo(SonicContext* SContext)
 {
 	//statusBackup = SContext->pBlackBoardStatus->pad35[26];
+	timerUnTransfoHedgeMayCry = 0;
 	memcpy(statusBackup, SContext->pBlackBoardStatus->pad35, sizeof(statusBackup));
 	TriggerSuperSonic(SContext, true);
 }
 
 void SuperSonic::Untransfo(SonicContext* SContext)
 {
+	timerUnTransfoHedgeMayCry = 0;
 	TriggerSuperSonic(SContext, false);
 	memcpy(SContext->pBlackBoardStatus->pad35, statusBackup, sizeof(statusBackup));
 	//SContext->pBlackBoardStatus->pad35[26] = statusBackup;  //fix floaty physics when detransform
@@ -47,6 +54,7 @@ void ForceUnTransfo(bool resetValues)
 {
 	if (!sonicContextPtr || !isInGame())
 		return;
+
 
 	SetSonicFall(sonicContextPtr, 0);
 
@@ -111,14 +119,17 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 
 		auto ring = GetRings(SContext);
 
-		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper && (nolimit || ring >= 50))
+		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)) && !isSuper)
 		{
-			
-			if (( (BlackboardHelper::IsJumping() || BlackboardHelper::IsFalling()) && !PlayerpressedTransfoBtn))
+
+			if (( hedgeMayCry && ring >= 100 || !hedgeMayCry && nolimit || !hedgeMayCry && ring >= 50))
 			{
-				ChangeStateParameter(SContext, 1, 0u); //force Sonk to stand state to remove jump ball effect
-				PlayerpressedTransfoBtn = true; //delay a bit the transfo
-				return;
+				if (((BlackboardHelper::IsJumping() || BlackboardHelper::IsFalling()) && !PlayerpressedTransfoBtn))
+				{
+					ChangeStateParameter(SContext, 1, 0u); //force Sonk to stand state to remove jump ball effect
+					PlayerpressedTransfoBtn = true; //delay a bit the transfo
+					return;
+				}
 			}
 		}
 
@@ -134,7 +145,7 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 
 void SuperSonic::ringLoss(SonicContext* SContext)
 {
-	if (nolimit || !isSuper)
+	if (nolimit || !isSuper || hedgeMayCry)
 		return;
 
 	auto ring = GetRings(SContext);
@@ -155,7 +166,7 @@ void SuperSonic::ringLoss(SonicContext* SContext)
 	}
 }
 
-static const float spdCap = 100.0f;
+static const float spdCap = 130.0f;
 static const float minimSpd = 20.0f;
 static float ascendSpd = minimSpd;
 
@@ -175,7 +186,7 @@ void SuperSonic::Ascend_CheckInput(SonicContext* sonk, GOCKinematicPrams* a)
 }
 
 static const float minimSpdDesc = -20.0f;
-static const float spdCapDesc = -100.0f;
+static const float spdCapDesc = -130.0f;
 static float descendSpd = minimSpdDesc;
 
 void SuperSonic::Descend_CheckInput(GOCKinematicPrams* a)
@@ -227,6 +238,20 @@ void SuperSonic::OnFrames()
 		{
 			SuperSonic::Ascend_CheckInput(SContext, param);
 			SuperSonic::Descend_CheckInput(param);
+
+			if (hedgeMayCry)
+			{
+				if (timerUnTransfoHedgeMayCry < timerUnTransfoHedgeMayCryCD)
+				{
+					timerUnTransfoHedgeMayCry++;
+				}
+				else
+				{
+					ForceUnTransfo(false);
+					timerUnTransfoHedgeMayCry = 0;
+					return;
+				}
+			}
 		}
 	}
 }
@@ -274,9 +299,17 @@ HOOK(char, __fastcall, titanfightCheck_r, sig_TitanSSManage(), __int64 a1, __int
 	return originaltitanfightCheck_r(a1, a2, a3);
 }
 
+void SuperSonic::InitSS2()
+{
+	//0x140151BF0
+	//SS2 research
+	WRITE_NOP(0x1409DE14F, 0x2); //force SS2 visual to show up(?)
+	WRITE_NOP(0x14B754155, 0x2); //force pac file to always load
+}
+
 void SuperSonic::Init() 
 {
-
+	//WRITE_NOP(0x1409C3067, 0x6);
 	WRITE_NOP(sigIsNotCyberSpace(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 
 	INSTALL_HOOK(isSuperSonic_r);
@@ -284,4 +317,6 @@ void SuperSonic::Init()
 	INSTALL_HOOK(ChangeStateParameter_r);
 
 	INSTALL_HOOK(titanfightCheck_r);
+
+	//SuperSonic:InitSS2();
 }

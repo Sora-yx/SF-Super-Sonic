@@ -13,9 +13,9 @@ __int64* MsgPtr = nullptr;
 
 enum msg
 {
-	MsgBegingTalkNpc = 8266,
-	MsgTransitCyberStage = 9016,
-	MsgTransitHacking = 9018,
+	MsgBegingTalkNpc = 8271,
+	MsgTransitCyberStage = 9080,
+	MsgTransitHacking = 9083,
 	MsgTransitIsland,
 	MsgTransitMasterTrialStage,
 	MsgTransitMenu,
@@ -68,8 +68,6 @@ void SetInGameTrue()
 
 #pragma region GameState Hooks
 
-
-//updated
 HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401F05D0, GameModeStagePlay* a1)
 {
 	ResumeBassMusic();
@@ -77,7 +75,6 @@ HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401F05D0, Game
 	return  originalGameStatePlayAllocator_r(a1);;
 }
 
-//updated
 HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x14771EBA0, __int64 a1)
 {
 	ResumeBassMusic();
@@ -85,7 +82,6 @@ HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x14771EBA0, __int64 a
 	return  originalCyberSpacePlayStateAllocator_r(a1);
 }
 
-//updated
 HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x1401BB730, __int64 a1)
 {
 	ResumeBassMusic();
@@ -93,7 +89,6 @@ HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x1401BB730,
 	return originalCyberStageChallengePlayState_Allocator_r(a1);
 }
 
-//updated
 HOOK(__int64, __fastcall, GetCurIsland_r, 0x14025F8C0, __int64 a1)
 {
 	currentIsland = originalGetCurIsland_r(a1);
@@ -115,17 +110,15 @@ static bool isValid(int64_t msg)
 		}
 	}
 
+	msgV.push_back(msg);
 	return false;
 }
 
-
 HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgID)
 {
-
 	if (!isValid(msgID))
 	{
-		PrintInfo("msg ID: %d\n", msgID);
-		msgV.push_back(msgID);
+		//PrintInfo("New msg ID: %d\n", msgID);
 	}
 
 	if (msgID == MsgBegingTalkNpc)
@@ -144,7 +137,7 @@ HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgI
 		ResetValues();
 	}
 
-	if (msgID == 8603) //end cyberspace
+	if (msgID == 8640 || msgID == 9072) //end / fail cyberspace
 	{
 		if (isSuper)
 		{
