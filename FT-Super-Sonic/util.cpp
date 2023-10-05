@@ -14,6 +14,7 @@ __int64* MsgPtr = nullptr;
 enum msg
 {
 	MsgBegingTalkNpc = 8271,
+	MsgBeginTalkNpc2 = 8666,
 	MsgTransitCyberStage = 9080,
 	MsgTransitHacking = 9083,
 	MsgTransitIsland,
@@ -21,7 +22,7 @@ enum msg
 	MsgTransitMenu,
 	MsgTransitPractice,
 	MsgEndCyber = 9061,
-	Msgpause = 9178, //updated but not sure, rest need to be done
+	Msgpause = 8874, //updated but not sure, rest need to be done
 	MsgEndPhaseBRush = 8427, //more like end regular combat I think
 };
 
@@ -118,10 +119,10 @@ HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgI
 {
 	if (!isValid(msgID))
 	{
-		//PrintInfo("New msg ID: %d\n", msgID);
+		PrintInfo("New msg ID: %d\n", msgID);
 	}
 
-	if (msgID == MsgBegingTalkNpc)
+	if (msgID == MsgBegingTalkNpc || msgID == MsgBeginTalkNpc2)
 	{
 		if (isSuper)
 			ForceUnTransfo(false);

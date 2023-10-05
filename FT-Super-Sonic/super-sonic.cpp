@@ -100,6 +100,8 @@ void ForceUnTransfo(bool resetValues)
 	if (!sonicContextPtr || !isInGame())
 		return;
 
+	SuperSonic::UntransfoSS2(sonicContextPtr);
+
 	SetSonicFall(sonicContextPtr, 0);
 
 	if (auraPtr)
@@ -107,7 +109,6 @@ void ForceUnTransfo(bool resetValues)
 		SSAuraDestructor(auraPtr);
 	}
 
-	SuperSonic::UntransfoSS2(sonicContextPtr);
 	SuperSonic::Untransfo(sonicContextPtr);
 
 
@@ -369,14 +370,14 @@ HOOK(char, __fastcall, titanfightCheck_r, sig_TitanSSManage(), __int64 a1, __int
 
 void SuperSonic::InitSS2()
 {
-	//0x140151BF0
-	//SS2 research
 	WRITE_NOP(0x14B754155, 0x2); //force pac file to always load
 }
 
+
 void SuperSonic::Init() 
 {
-	//WRITE_NOP(0x1409C3067, 0x6);
+
+	SuperSonic:InitSS2();
 	WRITE_NOP(sigIsNotCyberSpace(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 
 	INSTALL_HOOK(isSuperSonic_r);
@@ -385,5 +386,5 @@ void SuperSonic::Init()
 
 	INSTALL_HOOK(titanfightCheck_r);
 
-	//SuperSonic:InitSS2();
+
 }

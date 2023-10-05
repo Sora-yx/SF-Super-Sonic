@@ -144,7 +144,8 @@ static FUNCTION_PTR(__int64, __fastcall, GameObjectGetGoc, 0x140D33370, __int64 
 static FUNCTION_PTR(__int64, __fastcall, GOCPlayerVisualGetVisualByHashName, 0x1408BA540, __int64 a1, int a2);
 static FUNCTION_PTR(__int64, __fastcall, VisualChangeToSuperSonic2, 0x1409DD9F0, __int64 a1);
 
-static FUNCTION_PTR(__int64, __fastcall, VisualChangeToSonic, 0x1409DDB80, __int64 a1);
+static FUNCTION_PTR(__int64, __fastcall, VisualChangeToSuperSonic, 0x1409DDB80, __int64 a1);
+static FUNCTION_PTR(void, __fastcall, sub_1408AB5A0, 0x1408AB5A0, __int64 a1, __int64 a2, __int64 a3);
 
 #define DataArray(type, name, address, length) \
     static type *const name = (type *)address; static const int name##_Length = length
