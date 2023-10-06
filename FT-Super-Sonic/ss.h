@@ -18,4 +18,5 @@ public:
 	static void TransfoSS2(SonicContext* SContext);
 	static void UntransfoSS2(SonicContext* SContext);
 	static void OnFrames();
+	static SonicContext* GetSonicContext();
 };

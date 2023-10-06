@@ -53,13 +53,14 @@ void SetInGameFalse()
 	triggerEnableGame = false;
 }
 
-
+extern bool titanFight;
 void SetInGameTrue()
 {
 	if (triggerEnableGame)
 	{
 		if (++timerDelay == 130)
 		{
+			titanFight = false;
 			inGame = true;
 			timerDelay = 0;
 			triggerEnableGame = false;

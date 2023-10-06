@@ -10,31 +10,21 @@ struct __declspec(align(8)) GameModeStagePlay
 	char c[8];
 };
 
-
+typedef struct SonicContext;
 struct __declspec(align(0x10)) Sonic
 {
-	void* vfTable;
-	char gap2[70];
-	char field_48;
-	char gap49[15];
-	char pComponents;
-	char gap59[4];
-	char field_5D;
-	__declspec(align(4)) char field_60;
-	char gap61[6];
-	char field_67[5];
-	char field_6C[100];
-	char field_7c[541];
+	INSERT_PADDING(0x2E0);
+	SonicContext* sonkContext;
 };
 
-struct __declspec(align(0x10)) BlackboardStatus
+struct __declspec(align(0x10)) Blackboardstatus
 {
-	INSERT_PADDING(44);
+	INSERT_PADDING(56);
 	int64_t StateFlags;
 	int64_t WorldFlags;
-	INSERT_PADDING(0xF0);
+	INSERT_PADDING(240);
 	bool IsIslandSideView;
-	INSERT_PADDING(83);
+	INSERT_PADDING(71);
 };
 
 struct __declspec(align(0x10)) GOCPlayerHsm
@@ -52,7 +42,7 @@ struct SonicContext
 	__int64 field_10;
 	__int64 field_18;
 	Sonic* pSonic;
-	BlackboardStatus* pBlackBoardStatus;
+	Blackboardstatus* pBlackBoardStatus;
 	__int64 field_30;
 	GOCPlayerHsm* pGOCPlayerHsm;
 	__int64 field_40;

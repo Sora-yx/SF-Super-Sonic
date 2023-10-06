@@ -7,25 +7,36 @@
 
 //Big shoutout to Death for helping finding the proper function that trigger SS!!!
 
-SonicContext* sonicContextPtr = nullptr;
 SSEffAuraS* auraPtr = nullptr;
 static int ringTimer = 0;
 bool isSuper = false;
 bool isSS2 = false;
-char statusBackup[10] = { 0 };
+int64_t statusBackup = 0;
 uint8_t inputDelay = 0;
 int curState = 0;
-//we hack the function that checks if the player is Super Sonic to copy SonicContext instance
+bool titanFight = false;
 
 //support for "Hedgehog May Cry" mod 
-static const int timerUnTransfoHedgeMayCryCD = 60 * 45;
-static int timerUnTransfoHedgeMayCry = 0;
+static const int timerTransfoBackHMC_CD = 60 * 90;
+static const int timerUnTransfoHMC_CD = 60 * 45;
+static int timerUnTransfoHMC = 0;
+static int timerTransfoBackHMC = 0;
 
-HOOK(bool, __fastcall, isSuperSonic_r, sigIsSuperSonic(), SonicContext* sCont)
+SonicContext* SuperSonic::GetSonicContext()
 {
-	sonicContextPtr = sCont;
-	return originalisSuperSonic_r(sCont);
+	auto p = (Sonic*)BlackboardHelper::GetPlayer();
+
+	if (p)
+	{
+		auto context = p->sonkContext;
+
+		if (context)
+			return context;
+	}
+
+	return nullptr;
 }
+
 
 //copy aura instance to disable it when detransform as the game doesn't do it.
 HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSEffAuraS* ptrSSAura)
@@ -76,41 +87,41 @@ void SuperSonic::UntransfoSS2(SonicContext* SContext)
 
 		isSS2 = false;
 	}
-
 }
 
 void SuperSonic::Transfo(SonicContext* SContext)
 {
 	//statusBackup = SContext->pBlackBoardStatus->pad35[26];
-	timerUnTransfoHedgeMayCry = 0;
-	memcpy(statusBackup, SContext->pBlackBoardStatus->pad35, sizeof(statusBackup));
+	timerUnTransfoHMC = 0;
+	statusBackup = SContext->pBlackBoardStatus->WorldFlags;
 	TriggerSuperSonic(SContext, true);
 }
 
 void SuperSonic::Untransfo(SonicContext* SContext)
 {
-	timerUnTransfoHedgeMayCry = 0;
+	timerUnTransfoHMC = 0;
 	TriggerSuperSonic(SContext, false);
-	memcpy(SContext->pBlackBoardStatus->pad35, statusBackup, sizeof(statusBackup));
+	SContext->pBlackBoardStatus->WorldFlags = statusBackup;
 	//SContext->pBlackBoardStatus->pad35[26] = statusBackup;  //fix floaty physics when detransform
 }
 
 void ForceUnTransfo(bool resetValues)
 {
-	if (!sonicContextPtr || !isInGame())
+	auto context = SuperSonic::GetSonicContext();
+
+	if (!context || !isInGame())
 		return;
 
-	SuperSonic::UntransfoSS2(sonicContextPtr);
+	SuperSonic::UntransfoSS2(context);
 
-	SetSonicFall(sonicContextPtr, 0);
+	SetSonicFall(context, 0);
 
 	if (auraPtr)
 	{
 		SSAuraDestructor(auraPtr);
 	}
 
-	SuperSonic::Untransfo(sonicContextPtr);
-
+	SuperSonic::Untransfo(context);
 
 	if (resetValues)
 	{
@@ -118,7 +129,7 @@ void ForceUnTransfo(bool resetValues)
 	}
 	else
 	{
-		ChangeStateParameter(sonicContextPtr, 1, 0);
+		ChangeStateParameter(context, 1, 0);
 	}
 
 	RestoreOriginalMusic();
@@ -132,6 +143,7 @@ void ResetValues()
 	SetInGameFalse();
 	PlayerpressedTransfoBtn = false;
 	isSuper = false;
+
 }
 
 void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
@@ -167,12 +179,19 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 	}
 	else
 	{
+		if (hedgeMayCry)
+		{
+			if (timerTransfoBackHMC > 0)
+			{
+				timerTransfoBackHMC--;
+				return;
+			}
+		}
 
 		auto ring = GetRings(SContext);
 
 		if ((isKeyPressed(TransformKey) || isInputPressed(TransformBtn)))
 		{
-
 			if (!isSuper)
 			{
 				if ((hedgeMayCry && ring >= 100 || !hedgeMayCry && nolimit || !hedgeMayCry && ring >= 50))
@@ -196,7 +215,6 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 					}
 				}
 			}
-
 		}
 
 		if (PlayerpressedTransfoBtn)
@@ -214,7 +232,7 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 
 void SuperSonic::ringLoss(SonicContext* SContext)
 {
-	if (nolimit || !isSuper || hedgeMayCry)
+	if (nolimit || !isSuper || hedgeMayCry || titanFight)
 		return;
 
 	auto ring = GetRings(SContext);
@@ -235,7 +253,7 @@ void SuperSonic::ringLoss(SonicContext* SContext)
 	}
 }
 
-static const float spdCap = 130.0f;
+static const float spdCap = 160.0f;
 static const float minimSpd = 20.0f;
 static float ascendSpd = minimSpd;
 
@@ -255,7 +273,7 @@ void SuperSonic::Ascend_CheckInput(SonicContext* sonk, GOCKinematicPrams* a)
 }
 
 static const float minimSpdDesc = -20.0f;
-static const float spdCapDesc = -130.0f;
+static const float spdCapDesc = -160.0f;
 static float descendSpd = minimSpdDesc;
 
 void SuperSonic::Descend_CheckInput(GOCKinematicPrams* a)
@@ -281,14 +299,15 @@ void SuperSonic::OnFrames()
 	if (BlackboardHelper::IsDead())
 	{
 		ResetValues();
+		isSS2 = false;
 		return;
 	}
 
 	SetInGameTrue();
 
-	auto SContext = sonicContextPtr;
+	auto SContext = SuperSonic::GetSonicContext();
 
-	if (!isInGame() || !SContext || !SContext->pSonic)
+	if (!SContext || !SContext->pSonic)
 		return;
 
 	auto stat = BlackboardHelper::GetStatus();
@@ -310,14 +329,15 @@ void SuperSonic::OnFrames()
 
 			if (hedgeMayCry)
 			{
-				if (timerUnTransfoHedgeMayCry < timerUnTransfoHedgeMayCryCD)
+				if (timerUnTransfoHMC < timerUnTransfoHMC_CD)
 				{
-					timerUnTransfoHedgeMayCry++;
+					timerUnTransfoHMC++;
 				}
 				else
 				{
 					ForceUnTransfo(false);
-					timerUnTransfoHedgeMayCry = 0;
+					timerTransfoBackHMC = timerTransfoBackHMC_CD;
+					timerUnTransfoHMC = 0;
 					return;
 				}
 			}
@@ -364,8 +384,15 @@ HOOK(void, __fastcall, SetNextAnim_r, 0x1407C9280, __int64 a1, const char* a2, u
 HOOK(char, __fastcall, titanfightCheck_r, sig_TitanSSManage(), __int64 a1, __int64 a2, float a3)
 {
 	//we don't want the custom SS stuff like ring drain to work during Titan fights.
-	SetInGameFalse();
+	titanFight = true;
 	return originaltitanfightCheck_r(a1, a2, a3);
+}
+
+HOOK(size_t, __fastcall, CreateSonicContext_r, 0x14AE109B0, size_t* Sonk, __int64 a2)
+{
+	isSuper = false;
+	isSS2 = false;
+	return originalCreateSonicContext_r(Sonk, a2);
 }
 
 void SuperSonic::InitSS2()
@@ -373,18 +400,14 @@ void SuperSonic::InitSS2()
 	WRITE_NOP(0x14B754155, 0x2); //force pac file to always load
 }
 
-
 void SuperSonic::Init() 
 {
-
 	SuperSonic:InitSS2();
 	WRITE_NOP(sigIsNotCyberSpace(), 0x2); //force Super Sonic visual to be loaded in cyberspace (fix crash)
 
-	INSTALL_HOOK(isSuperSonic_r);
 	INSTALL_HOOK(SuperSonicEffectAura_r); //used to delete super aura when detransform
 	INSTALL_HOOK(ChangeStateParameter_r);
 
 	INSTALL_HOOK(titanfightCheck_r);
-
-
+	INSTALL_HOOK(CreateSonicContext_r);
 }

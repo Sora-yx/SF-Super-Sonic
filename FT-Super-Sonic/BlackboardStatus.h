@@ -11,6 +11,7 @@ namespace app::player
 		bool isSuper;
 		INSERT_PADDING(39); //44 bytes here
 		int64_t StateFlags;
+		INSERT_PADDING(8);
 		int64_t WorldFlags; //60 bytes here
 		INSERT_PADDING(0xF0); //300
 		bool IsIslandSideView; //301

@@ -97,6 +97,21 @@ public:
 		return pBlackboardStatus;
 	}
 
+	inline static int* GetPlayer()
+	{
+		auto* pGameDocument = app::GameDocument::GetSingleton();
+
+		if (!pGameDocument)
+			return nullptr;
+
+		auto* pSonic = pGameDocument->GetGameObject<app::player::Sonic>();
+
+		if (!pSonic)
+			return nullptr;
+
+		return (int*)pSonic;
+	}
+
 	inline static bool CheckStateFlags(EStateFlags in_flags)
 	{
 		auto status = GetStatus();
@@ -114,7 +129,9 @@ public:
 		if (!status)
 			return false;
 
-		return _bittest64(&status->WorldFlags, in_flags);
+		Blackboardstatus* fucked = (Blackboardstatus*)status;
+		PrintInfo("World Flag: %d\n", fucked->WorldFlags);
+		return _bittest64(&fucked->WorldFlags, in_flags);
 	}
 
 	inline static bool IsAirBoosting()
