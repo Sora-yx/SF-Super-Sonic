@@ -14,7 +14,7 @@ __int64* MsgPtr = nullptr;
 enum msg
 {
 	MsgBegingTalkNpc = 8271,
-	MsgBeginTalkNpc2 = 8666,
+	//MsgBeginTalkNpc2 = 8666,
 	MsgTransitCyberStage = 9080,
 	MsgTransitHacking = 9083,
 	MsgTransitIsland,
@@ -120,10 +120,10 @@ HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgI
 {
 	if (!isValid(msgID))
 	{
-		PrintInfo("New msg ID: %d\n", msgID);
+		//PrintInfo("New msg ID: %d\n", msgID);
 	}
 
-	if (msgID == MsgBegingTalkNpc || msgID == MsgBeginTalkNpc2)
+	if (msgID == MsgBegingTalkNpc)
 	{
 		if (isSuper)
 			ForceUnTransfo(false);

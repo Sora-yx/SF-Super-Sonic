@@ -129,9 +129,9 @@ public:
 		if (!status)
 			return false;
 
-		Blackboardstatus* fucked = (Blackboardstatus*)status;
-		PrintInfo("World Flag: %d\n", fucked->WorldFlags);
-		return _bittest64(&fucked->WorldFlags, in_flags);
+		Blackboardstatus* status_ = (Blackboardstatus*)status; //use regular C struct instead of the class version, because struct alignement can go to hell.
+		//PrintInfo("World Flag: %d\n", fucked->WorldFlags);
+		return _bittest64(&status_->WorldFlags, in_flags);
 	}
 
 	inline static bool IsAirBoosting()
