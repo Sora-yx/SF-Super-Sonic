@@ -307,7 +307,7 @@ void SuperSonic::OnFrames()
 
 	auto SContext = SuperSonic::GetSonicContext();
 
-	if (!SContext || !SContext->pSonic)
+	if (!isInGame() || !SContext || !SContext->pSonic)
 		return;
 
 	auto stat = BlackboardHelper::GetStatus();
