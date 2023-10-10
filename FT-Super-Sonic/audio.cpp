@@ -4,7 +4,6 @@
 
 SoundDirector* SoundDirectorPtr = nullptr;
 std::string backupBGMName = "";
-extern int currentIsland;
 static  bool bassinit = false;
 
 //they need to be global, don't ask
@@ -23,7 +22,8 @@ std::string songArray[] =
 	"undefeatable",
 	"wyvern_ext",
 	"knight",
-	"maintheme"
+	"maintheme",
+	"maintheme_re"
 };
 
 std::string getSSSong()
