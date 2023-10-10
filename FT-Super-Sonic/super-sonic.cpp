@@ -22,6 +22,9 @@ static const int timerUnTransfoHMC_CD = 60 * 45;
 static int timerUnTransfoHMC = 0;
 static int timerTransfoBackHMC = 0;
 
+static int statusBackupTest[sizeof(Blackboardstatus)] = {0};
+static int64_t worldflagbackup = 0;
+
 SonicContext* SuperSonic::GetSonicContext()
 {
 	auto p = (Sonic*)BlackboardHelper::GetPlayer();
@@ -45,6 +48,15 @@ HOOK(SSEffAuraS*, __fastcall, SuperSonicEffectAura_r, sigsub_SSEFfectAura(), SSE
 	return auraPtr;
 }
 
+bool isPerfectParry = false;
+void DisablePerfectParry(SonicContext* SContext)
+{
+	if (isPerfectParry)
+	{
+		DisableCombatFlags((long long*)SContext, 16i64);
+		DisableWorldFlags((long long*)SContext, 0x47u);
+	}
+}
 
 void SuperSonic::TransfoSS2(SonicContext* SContext)
 {	
@@ -61,6 +73,13 @@ void SuperSonic::TransfoSS2(SonicContext* SContext)
 
 		if (pVisualSuperSonic)
 			VisualChangeToSuperSonic2(pVisualSuperSonic);
+
+
+		if (isPerfectParry)
+		{
+			SetCombatFlags((long long*)SContext, 16i64, 1);
+			SetWorldFlags((long long*)SContext, 71i64, 1);
+		}
 
 		isSS2 = true;
 	}
@@ -85,31 +104,28 @@ void SuperSonic::UntransfoSS2(SonicContext* SContext)
 		if (pVisualSuperSonic)
 			VisualChangeToSuperSonic(pVisualSuperSonic);
 
+		DisablePerfectParry(SContext);
 		isSS2 = false;
 	}
 }
 
 void SuperSonic::Transfo(SonicContext* SContext)
 {
-	//statusBackup = SContext->pBlackBoardStatus->pad35[26];
 	timerUnTransfoHMC = 0;
-	statusBackup = SContext->pBlackBoardStatus->WorldFlags;
 	TriggerSuperSonic(SContext, true);
 }
 
 void SuperSonic::Untransfo(SonicContext* SContext)
 {
-	timerUnTransfoHMC = 0;
 	TriggerSuperSonic(SContext, false);
-	SContext->pBlackBoardStatus->WorldFlags = statusBackup;
-	//SContext->pBlackBoardStatus->pad35[26] = statusBackup;  //fix floaty physics when detransform
+	SContext->pBlackBoardStatus->WorldFlags = statusBackup; //fix floaty physics when detransform
 }
 
 void ForceUnTransfo(bool resetValues)
 {
 	auto context = SuperSonic::GetSonicContext();
 
-	if (!context || !isInGame())
+	if (!context)
 		return;
 
 	SuperSonic::UntransfoSS2(context);
@@ -136,14 +152,15 @@ void ForceUnTransfo(bool resetValues)
 }
 
 static bool PlayerpressedTransfoBtn = false;
-
+extern bool photoMode;
 //TO Do: Use classes directly from the game to avoid that lol
 void ResetValues()
 {
 	SetInGameFalse();
 	PlayerpressedTransfoBtn = false;
 	isSuper = false;
-
+	isSS2 = false;
+	photoMode = false;
 }
 
 void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
@@ -291,15 +308,15 @@ void SuperSonic::Descend_CheckInput(GOCKinematicPrams* a)
 	}
 }
 
+
 void SuperSonic::OnFrames()
 {
 	if (BlackboardHelper::GetStatus() == nullptr)
 		return;
 
-	if (BlackboardHelper::IsDead())
+	if (BlackboardHelper::IsDead()) //might be not needed anymore
 	{
 		ResetValues();
-		isSS2 = false;
 		return;
 	}
 
@@ -320,6 +337,7 @@ void SuperSonic::OnFrames()
 
 	if (isSuper)
 	{
+
 		SuperSonic::ringLoss(SContext);
 
 		if (BlackboardHelper::IsFlyingAsSS())
@@ -353,6 +371,7 @@ void RemoveRings(SonicContext* SContext)
 HOOK(char, __fastcall, ChangeStateParameter_r, 0x1408AAB30, SonicContext* a1, __int64 a2, __int64 a3)
 {
 	curState = a2;
+
 	return originalChangeStateParameter_r(a1, a2, a3);
 }
 
@@ -369,19 +388,47 @@ const char* getSSAnim(const char* anm)
 	return anm;
 }
 
-//unused
-HOOK(void, __fastcall, SetNextAnim_r, 0x1407C9280, __int64 a1, const char* a2, unsigned __int8 a3)
-{	
-	if (isSuper)
+//very hack but it works, not feeling nopping all the condition checks and restoring them after.
+void SetSS2ParryAnim(const char* &a2)
+{
+	if (isSuper && isSS2)
 	{
-		a2 = getSSAnim(a2);
+		if (strcmp(a2, "PARRY_MISS") == NULL) //check if the const char contains at least "parry_miss"
+		{
+			a2 = "PARRY_JUST_MISS";
+		}
+		else if (strcmp(a2, "PARRY_START") == NULL)
+		{
+			a2 = "PARRY_JUST_START";
+		}
+		else if (strstr(a2, "PARRY") != NULL || strstr(a2, "PARRY_FLY") != NULL)  //check if the const char matches a specific value 
+		{
+			a2 = "PARRY_JUST";
+		}
 	}
+}
 
+HOOK(void, __fastcall, SetNextAnim_r, sigSetAnim(), __int64 a1, const char* a2, unsigned __int8 a3)
+{	
+	SetSS2ParryAnim(a2);
 	originalSetNextAnim_r(a1, a2, a3);
 }
 
+HOOK(void, __fastcall, SetNextAnim2_r, 0x1408B9FB0, __int64 a1, const char* a2)
+{
+	SetSS2ParryAnim(a2);
+	originalSetNextAnim2_r(a1, a2);
+}
+
+//I made some tests and couldn't find where this is used, but the parry code reference it, so just in case...
+HOOK(void, __fastcall, SetNextAnim3_r, 0x1409D64D0, __int64 a1, char a2, const char* a3)
+{	
+	SetSS2ParryAnim(a3);
+	originalSetNextAnim3_r(a1, a2, a3);
+}
+
 //used during Titan fight to set SS and ring drain
-HOOK(char, __fastcall, titanfightCheck_r, sig_TitanSSManage(), __int64 a1, __int64 a2, float a3)
+HOOK(void, __fastcall, titanfightCheck_r, sig_TitanSSManage(), __int64 a1, __int64 a2, float a3)
 {
 	//we don't want the custom SS stuff like ring drain to work during Titan fights.
 	titanFight = true;
@@ -410,4 +457,14 @@ void SuperSonic::Init()
 
 	INSTALL_HOOK(titanfightCheck_r);
 	INSTALL_HOOK(CreateSonicContext_r);
+	
+	if (!isPerfectParry) //we hook the functions that set anims to force SS2 parry anim, we don't need to do it if perfect parry is enabled since the game will do it for us.
+	{
+		INSTALL_HOOK(SetNextAnim_r);
+		INSTALL_HOOK(SetNextAnim2_r);
+		INSTALL_HOOK(SetNextAnim3_r);
+	}
+
+	//INSTALL_HOOK(GetNextCombatID);
+
 }

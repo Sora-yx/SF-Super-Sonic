@@ -8,8 +8,8 @@
 
 HANDLE stdoutHandle = nullptr;
 static bool inGame = false;
-int currentIsland = 0;
 __int64* MsgPtr = nullptr;
+bool photoMode = false;
 
 enum msg
 {
@@ -23,7 +23,8 @@ enum msg
 	MsgTransitPractice,
 	MsgEndCyber = 9061,
 	Msgpause = 8874, //updated but not sure, rest need to be done
-	MsgEndPhaseBRush = 8427, //more like end regular combat I think
+	msgPhotoModeEnd = 0x227B,
+	msgPhotoModeStart,
 };
 
 void PrintInfo(const char* text, ...)
@@ -58,7 +59,7 @@ void SetInGameTrue()
 {
 	if (triggerEnableGame)
 	{
-		if (++timerDelay == 130)
+		if (++timerDelay == 80)
 		{
 			titanFight = false;
 			inGame = true;
@@ -68,33 +69,42 @@ void SetInGameTrue()
 	}	
 }
 
+
+
 #pragma region GameState Hooks
+
+static void TriggerInGame()
+{
+	ResumeBassMusic();
+
+	if (!photoMode)
+	{
+		triggerEnableGame = true;
+	}
+}
 
 HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401F05D0, GameModeStagePlay* a1)
 {
-	ResumeBassMusic();
-	triggerEnableGame = true;
-	return  originalGameStatePlayAllocator_r(a1);;
+	TriggerInGame();
+	return originalGameStatePlayAllocator_r(a1);;
 }
 
 HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x14771EBA0, __int64 a1)
 {
-	ResumeBassMusic();
-	triggerEnableGame = true;
+	TriggerInGame();
 	return  originalCyberSpacePlayStateAllocator_r(a1);
 }
 
 HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x1401BB730, __int64 a1)
 {
-	ResumeBassMusic();
-	triggerEnableGame = true;
+	TriggerInGame();
 	return originalCyberStageChallengePlayState_Allocator_r(a1);
 }
 
-HOOK(__int64, __fastcall, GetCurIsland_r, 0x14025F8C0, __int64 a1)
+HOOK(__int64, __fastcall, MasterTrialPlayState_Allocator_r, 0x1401DFAB0 , __int64 a1)
 {
-	currentIsland = originalGetCurIsland_r(a1);
-	return currentIsland;
+	TriggerInGame();
+	return originalMasterTrialPlayState_Allocator_r(a1);
 }
 
 #pragma endregion
@@ -118,25 +128,36 @@ static bool isValid(int64_t msg)
 
 HOOK(__int64, __fastcall, SetNewMSG_r, sigSetNewMsg(), __int64* a1, __int64 msgID)
 {
-	if (!isValid(msgID))
+	/*/if (!isValid(msgID))
 	{
-		//PrintInfo("New msg ID: %d\n", msgID);
-	}
+		PrintInfo("New msg ID: %d\n", msgID);
+	}*/
 
 	if (msgID == MsgBegingTalkNpc)
 	{
 		if (isSuper)
 			ForceUnTransfo(false);
 	}
-	else if (msgID == Msgpause) 
+	else if (msgID == Msgpause || msgID == msgPhotoModeStart)
 	{
+		if (msgID == msgPhotoModeStart)
+			photoMode = true;
+
 		PauseBassMusic();
-		ResetValues();
+		SetInGameFalse();
 	}
 	else if ( (msgID >= MsgTransitCyberStage && msgID <= MsgTransitPractice))
 	{
 		StopBassMusic();
-		ResetValues();
+
+		if (msgID != MsgTransitPractice)
+			SetInGameFalse();
+	}
+
+	if (msgID == msgPhotoModeEnd)
+	{
+		photoMode = false;
+		TriggerInGame();
 	}
 
 	if (msgID == 8640 || msgID == 9072) //end / fail cyberspace
@@ -207,20 +228,14 @@ std::string findFile(const std::string& folderPath, const std::string& fileName)
 
 void Init_Util()
 {
-	INSTALL_HOOK(GetCurIsland_r);
-
 	//Used to check if the game is on a state "playable" and unpaused, hopefully someday I'll find a more convenient way to do it, LOL
 	INSTALL_HOOK(GameStatePlayAllocator_r);
 	INSTALL_HOOK(CyberSpacePlayStateAllocator_r);
-
+	INSTALL_HOOK(MasterTrialPlayState_Allocator_r);
 	INSTALL_HOOK(CyberStageChallengePlayState_Allocator_r);
 
 	//used to check that the game has been paused
 	INSTALL_HOOK(SetNewMSG_r);
 
 	//battle rush has many issue with SS so not allowing it there for now.
-
-	//INSTALL_HOOK(BattleRushPlayStateAllocator_r);	
-	//INSTALL_HOOK(BattleRushNextPhase_r); //force SS to detransfo between battle rush transition (fix crashes)
-
 }

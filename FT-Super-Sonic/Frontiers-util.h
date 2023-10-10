@@ -136,6 +136,10 @@ static FUNCTION_PTR(__int64, __fastcall, VisualChangeToSuperSonic2, 0x1409DD9F0,
 
 static FUNCTION_PTR(__int64, __fastcall, VisualChangeToSuperSonic, 0x1409DDB80, __int64 a1);
 static FUNCTION_PTR(void, __fastcall, sub_1408AB5A0, 0x1408AB5A0, __int64 a1, __int64 a2, __int64 a3);
+static FUNCTION_PTR(__int64, __fastcall, SetCombatFlags, 0x1408AB5A0, __int64* a1, __int64 a2, __int64 a3);
+static FUNCTION_PTR(__int64, __fastcall, SetWorldFlags, 0x1409CBD40, __int64* a1, __int64 a2, __int64 a3);
+static FUNCTION_PTR(void, __fastcall, DisableCombatFlags, 0x1409C9AC0, __int64* a1, __int64 a2);
+static FUNCTION_PTR(signed __int64, __fastcall, DisableWorldFlags, 0x1409CA310, __int64* a1, __int64 a2);
 
 #define DataArray(type, name, address, length) \
     static type *const name = (type *)address; static const int name##_Length = length

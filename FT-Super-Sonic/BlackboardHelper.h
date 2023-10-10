@@ -118,7 +118,7 @@ public:
 
 		if (!status)
 			return false;
-
+	
 		return _bittest64(&status->StateFlags, in_flags);
 	}
 

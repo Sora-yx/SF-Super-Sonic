@@ -6,6 +6,7 @@ int AscendBtn = XINPUT_GAMEPAD_A;
 int DescendBtn = XINPUT_GAMEPAD_B;
 int TransformBtn = XINPUT_GAMEPAD_DPAD_UP;
 int UntransformBtn = XINPUT_GAMEPAD_DPAD_DOWN;
+extern bool isPerfectParry;
 
 std::string AscendKey = "SPACE";
 std::string DescendKey = "CTRL";
@@ -28,6 +29,7 @@ void Init_Config()
 	}
 
 	nolimit = reader.GetBoolean("Mod", "nolimit", nolimit);
+	isPerfectParry = reader.GetBoolean("Mod", "isPerfectParry", isPerfectParry);
 	hedgeMayCry = reader.GetBoolean("Mod", "hedgeMayCry", hedgeMayCry);
 
 	useSSMusic = (uint8_t)reader.GetBoolean("Audio", "useSSMusic", useSSMusic);
