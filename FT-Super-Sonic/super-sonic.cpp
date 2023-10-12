@@ -62,7 +62,7 @@ void SuperSonic::TransfoSS2(SonicContext* SContext)
 {	
 	auto pPlayer = PlayerHsmContextGetPlayer((long long*)SContext);
 	auto pPlayerVisualGocStaticClass = GOCPlayerVisualGetStaticClass();
-	
+
 	if (pPlayer && pPlayerVisualGocStaticClass)
 	{
 		auto pPlayerVisualGoc = GameObjectGetGoc(pPlayer, (__int64)pPlayerVisualGocStaticClass);
@@ -337,7 +337,6 @@ void SuperSonic::OnFrames()
 
 	if (isSuper)
 	{
-
 		SuperSonic::ringLoss(SContext);
 
 		if (BlackboardHelper::IsFlyingAsSS())
@@ -446,6 +445,7 @@ void SuperSonic::InitSS2()
 {
 	WRITE_NOP(0x14B754155, 0x2); //force pac file to always load
 }
+
 
 void SuperSonic::Init() 
 {

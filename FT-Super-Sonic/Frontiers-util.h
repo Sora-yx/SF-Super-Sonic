@@ -35,6 +35,14 @@ struct __declspec(align(0x10)) GOCPlayerHsm
 	uint8_t fieldB[4];
 };
 
+struct ScriptSequenceManager
+{
+	char a[0x70];
+	void* gameStepListener;
+	void* saveManagerListener;
+
+};
+
 struct SonicContext
 {
 	__int64 field_0;

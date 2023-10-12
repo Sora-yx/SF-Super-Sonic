@@ -2,7 +2,7 @@
 #include "ss.h"
 #include "music.h"
 #include "input.h"
-#include "./Loaders/LostCodeLoader.h"
+#include "../Dependencies/ModInfo.h"
 #include "bass.h"
 #include <fstream>
 

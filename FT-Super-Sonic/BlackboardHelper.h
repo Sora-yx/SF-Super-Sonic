@@ -1,5 +1,7 @@
 #pragma once
+
 #include "vector"
+
 
 extern int curState;
 
@@ -74,22 +76,24 @@ public:
 
 	inline static app::player::BlackboardStatus* GetStatus()
 	{
-		auto* pGameDocument = app::GameDocument::GetSingleton();
+		auto* pGameManager = hh::game::GameManager::GetSingleton(); 
 
-		if (!pGameDocument)
+		if (!pGameManager)
 			return nullptr;
 
-		auto* pSonic = pGameDocument->GetGameObject<app::player::Sonic>();
+		auto* pSonic = pGameManager->GetGameObject<app::player::Sonic>();
 
 		if (!pSonic)
 			return nullptr;
 
-		auto* pPlayerBlackboard = pSonic->GetComponent<app::player::GOCPlayerBlackboard>();
+		auto* pblackboard = pSonic->GetGOC<app::player::GOCPlayerBlackboard>();
 
-		if (!pPlayerBlackboard)
+
+		if (!pblackboard)
 			return nullptr;
 
-		auto* pBlackboardStatus = pPlayerBlackboard->pBlackboard->GetBlackboardContent<app::player::BlackboardStatus>();
+
+		auto* pBlackboardStatus = pblackboard->pBlackboard->GetBlackboardContent<app::player::BlackboardStatus>();
 
 		if (!pBlackboardStatus)
 			return nullptr;
@@ -99,12 +103,17 @@ public:
 
 	inline static int* GetPlayer()
 	{
-		auto* pGameDocument = app::GameDocument::GetSingleton();
+		auto* pGameManager = hh::game::GameManager::GetSingleton();
 
-		if (!pGameDocument)
+		if (!pGameManager)
 			return nullptr;
 
-		auto* pSonic = pGameDocument->GetGameObject<app::player::Sonic>();
+		auto* lvlInfo = pGameManager->GetService<app::level::LevelInfo>();
+
+		if (!lvlInfo)
+			return nullptr;
+
+		auto pSonic = lvlInfo->GetMessageManager()->GetMessengerByHandle<app::player::Sonic>(lvlInfo->pPlayerInfos[0]->PlayerHandle);
 
 		if (!pSonic)
 			return nullptr;
@@ -176,7 +185,7 @@ public:
 
 	inline static bool IsSuper()
 	{
-		return GetStatus()->isSuper;
+		return GetStatus()->IsSuper;
 	}
 
 	inline static bool IsFlyingAsSS()

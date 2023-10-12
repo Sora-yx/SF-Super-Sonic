@@ -24,8 +24,7 @@
 #include "./Signature.h"
 
 //internal
-#include "BlackboardStatus.h"
-#include "sigscans.h"
+#include "sigscans.h"	
 #include "Frontiers-util.h"
 #include "util.h"
 #include "mod.h"
