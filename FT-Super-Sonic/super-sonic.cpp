@@ -407,7 +407,7 @@ void SetSS2ParryAnim(const char* &a2)
 	}
 }
 
-HOOK(void, __fastcall, SetNextAnim_r, sigSetAnim(), __int64 a1, const char* a2, unsigned __int8 a3)
+HOOK(void, __fastcall, SetNextAnim_r, 0x1408B9F20, __int64 a1, const char* a2, unsigned __int8 a3)
 {	
 	SetSS2ParryAnim(a2);
 	originalSetNextAnim_r(a1, a2, a3);
