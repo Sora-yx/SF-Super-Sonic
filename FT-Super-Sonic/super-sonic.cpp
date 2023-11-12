@@ -157,6 +157,7 @@ extern bool photoMode;
 void ResetValues()
 {
 	SetInGameFalse();
+	titanFight = false;
 	PlayerpressedTransfoBtn = false;
 	isSuper = false;
 	isSS2 = false;
@@ -196,7 +197,7 @@ void SuperSonic::Transfo_CheckInput(SonicContext* SContext)
 	}
 	else
 	{
-		if (hedgeMayCry)
+		if (hedgeMayCry && !titanFight)
 		{
 			if (timerTransfoBackHMC > 0)
 			{
