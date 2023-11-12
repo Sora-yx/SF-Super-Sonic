@@ -1,7 +1,7 @@
 #pragma once
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigTriggerSS,
 	0x1409C3050,
@@ -10,7 +10,7 @@ SIG_SCAN
 )
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigGetRings,
 	0x1408AAE30,
@@ -19,7 +19,7 @@ SIG_SCAN
 )
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigSubRings,
 	0x1408AB9F0,
@@ -28,7 +28,7 @@ SIG_SCAN
 )
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigSetSonicFall,
 	0x1409CF3F0,
@@ -37,7 +37,7 @@ SIG_SCAN
 )
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigIsSuperSonic,
 	0x1408AB180,
@@ -46,7 +46,7 @@ SIG_SCAN
 )
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigIsNotCyberSpace,
 	0x140889DBA,
@@ -55,7 +55,7 @@ SIG_SCAN
 )
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigsub_SSEFfectAura,
 	0x14AEC58D0,
@@ -64,7 +64,7 @@ SIG_SCAN
 )
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigsub_SSAuraDestructor,
 	0x140895410,
@@ -73,7 +73,7 @@ SIG_SCAN
 )
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigPlayBGM,
 	0x1409F5EB0,
@@ -81,7 +81,7 @@ SIG_SCAN
 	"xxxxxxx"
 );
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigSetNewMsg,
 	0x1528F51A0,
@@ -90,7 +90,7 @@ SIG_SCAN
 )
 
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sigGetCurIsland_,
 	0x14025F8C0,
@@ -98,7 +98,7 @@ SIG_SCAN
 	"x????xxxxx"
 )
 
-SIG_SCAN
+CL_SCAN_SIGNATURE
 (
 	sig_TitanSSManage,
 	0x14099A700,
