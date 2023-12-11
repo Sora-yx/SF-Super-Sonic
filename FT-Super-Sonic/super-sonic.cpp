@@ -369,7 +369,7 @@ void RemoveRings(SonicContext* SContext)
 }
 
 //to do test if it works fine
-HOOK(char, __fastcall, ChangeStateParameter_r, sig_ChangeStateParameter(), SonicContext* a1, __int64 a2, __int64 a3)
+HOOK(char, __fastcall, ChangeStateParameter_r, 0x1408ABE70, SonicContext* a1, __int64 a2, __int64 a3)
 {
 	curState = a2;
 
