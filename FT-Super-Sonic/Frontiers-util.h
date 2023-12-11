@@ -126,30 +126,28 @@ static FUNCTION_PTR(void, __fastcall, SubRing, sigSubRings(), SonicContext* sCon
 static FUNCTION_PTR(void, __fastcall, playBGM, sigPlayBGM(), SoundDirector* a1, const char** a3);
 
 
-
 static FUNCTION_PTR(char, __fastcall, TriggerSuperSonic, sigTriggerSS(), SonicContext* a1, bool enabled);
 static FUNCTION_PTR(size_t, __fastcall, GetRings, sigGetRings(), SonicContext* sContext);
 static FUNCTION_PTR(char, __fastcall, SetSonicFall, sigSetSonicFall(), SonicContext* a1, char a2);
-static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1408AAB30, SonicContext* Sonk, __int64 actionID, __int64 a3);
+static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1408ABE70, SonicContext* Sonk, __int64 actionID, __int64 a3); 
 static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, sigsub_SSAuraDestructor(), SSEffAuraS* a1);
 static FUNCTION_PTR(__int64, __fastcall, SetNewMSG, sigSetNewMsg(), __int64* a1, int a2);
 
-static FUNCTION_PTR(__int64, __fastcall, msgConstructor, 0x140ED8770, __int64 a1, __int64 a2);
+static FUNCTION_PTR(__int64, __fastcall, PlayerHsmContextGetPlayer, 0x1402484E0, __int64* a1);
+static FUNCTION_PTR(void*, __cdecl, GOCPlayerVisualGetStaticClass, 0x1408BC3E0); 
+static FUNCTION_PTR(__int64, __fastcall, GameObjectGetGoc, 0x140D35EB0, __int64 a1, __int64 a2); 
+static FUNCTION_PTR(__int64, __fastcall, GOCPlayerVisualGetVisualByHashName, 0x1408BB880, __int64 a1, int a2); 
+static FUNCTION_PTR(__int64, __fastcall, VisualChangeToSuperSonic2, 0x1409DF740, __int64 a1);
 
-static FUNCTION_PTR(__int64, __fastcall, PlayerHsmContextGetPlayer, 0x1402478A0, __int64* a1);
-static FUNCTION_PTR(void*, __cdecl, GOCPlayerVisualGetStaticClass, 0x1408BB0A0);
-static FUNCTION_PTR(__int64, __fastcall, GameObjectGetGoc, 0x140D33370, __int64 a1, __int64 a2);
-static FUNCTION_PTR(__int64, __fastcall, GOCPlayerVisualGetVisualByHashName, 0x1408BA540, __int64 a1, int a2);
-static FUNCTION_PTR(__int64, __fastcall, VisualChangeToSuperSonic2, 0x1409DD9F0, __int64 a1);
+static FUNCTION_PTR(__int64, __fastcall, VisualChangeToSuperSonic, 0x1409DF8D0, __int64 a1);  
+//static FUNCTION_PTR(void, __fastcall, sub_1408AB5A0, 0x1408AB5A0, __int64 a1, __int64 a2, __int64 a3);
+static FUNCTION_PTR(__int64, __fastcall, SetCombatFlags, 0x1408AC8E0, __int64* a1, __int64 a2, __int64 a3);
+static FUNCTION_PTR(__int64, __fastcall, SetWorldFlags, 0x1409CDA90, __int64* a1, __int64 a2, __int64 a3);
 
-static FUNCTION_PTR(__int64, __fastcall, VisualChangeToSuperSonic, 0x1409DDB80, __int64 a1);
-static FUNCTION_PTR(void, __fastcall, sub_1408AB5A0, 0x1408AB5A0, __int64 a1, __int64 a2, __int64 a3);
-static FUNCTION_PTR(__int64, __fastcall, SetCombatFlags, 0x1408AB5A0, __int64* a1, __int64 a2, __int64 a3);
-static FUNCTION_PTR(__int64, __fastcall, SetWorldFlags, 0x1409CBD40, __int64* a1, __int64 a2, __int64 a3);
-static FUNCTION_PTR(void, __fastcall, DisableCombatFlags, 0x1409C9AC0, __int64* a1, __int64 a2);
-static FUNCTION_PTR(signed __int64, __fastcall, DisableWorldFlags, 0x1409CA310, __int64* a1, __int64 a2);
+static FUNCTION_PTR(void, __fastcall, DisableCombatFlags, 0x1409CB810, __int64* a1, __int64 a2); 
+static FUNCTION_PTR(signed __int64, __fastcall, DisableWorldFlags, 0x1409CC060, __int64* a1, __int64 a2);
 
 #define DataArray(type, name, address, length) \
     static type *const name = (type *)address; static const int name##_Length = length
 
-DataArray(char, pVisualSuperSonicHash, 0x143CD8818, 5);
+DataArray(char, pVisualSuperSonicHash, 0x143CDC8F8, 5); 

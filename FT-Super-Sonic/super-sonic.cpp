@@ -368,7 +368,8 @@ void RemoveRings(SonicContext* SContext)
 	SubRing(SContext, 1);
 }
 
-HOOK(char, __fastcall, ChangeStateParameter_r, 0x1408AAB30, SonicContext* a1, __int64 a2, __int64 a3)
+//to do test if it works fine
+HOOK(char, __fastcall, ChangeStateParameter_r, sig_ChangeStateParameter(), SonicContext* a1, __int64 a2, __int64 a3)
 {
 	curState = a2;
 
@@ -408,20 +409,25 @@ void SetSS2ParryAnim(const char* &a2)
 	}
 }
 
-HOOK(void, __fastcall, SetNextAnim_r, 0x1408B9F20, __int64 a1, const char* a2, unsigned __int8 a3)
+//sig scan seems to  fail for the set anims functions.
+
+//"\x40\x53\x48\x83\xEC\x20\xF6\x81\x78\x01\x00\x00\x10\x48\x8B", "xxxxxxxxxxxxxxx"
+HOOK(void, __fastcall, SetNextAnim_r, 0x1408BB260, __int64 a1, const char* a2, unsigned __int8 a3)
 {	
 	SetSS2ParryAnim(a2);
 	originalSetNextAnim_r(a1, a2, a3);
 }
 
-HOOK(void, __fastcall, SetNextAnim2_r, 0x1408B9FB0, __int64 a1, const char* a2)
+//"\xE8\xCC\xCC\xCC\xCC\xEB\x7E\x8B\x4E\x50", "x????xxxxx"
+HOOK(void, __fastcall, SetNextAnim2_r, 0x1408BB2F0, __int64 a1, const char* a2)
 {
 	SetSS2ParryAnim(a2);
 	originalSetNextAnim2_r(a1, a2);
 }
 
 //I made some tests and couldn't find where this is used, but the parry code reference it, so just in case...
-HOOK(void, __fastcall, SetNextAnim3_r, 0x1409D64D0, __int64 a1, char a2, const char* a3)
+//"\x40\x53\x48\x83\xEC\x20\x0F\xBE\xD2\x49\x8B\xD8\xE8\xCC\xCC\xCC\xCC\x48\x8B\x48\x30\x48\x85\xC9\x74\x0D\x48\x8B\xD3\x48\x83\xC4\x20\x5B\xE9\xCC\xCC\xCC\xCC\x48", "xxxxxxxxxxxxx????xxxxxxxxxxxxxxxxxx????x"
+HOOK(void, __fastcall, SetNextAnim3_r, 0x1409D8220, __int64 a1, char a2, const char* a3)
 {	
 	SetSS2ParryAnim(a3);
 	originalSetNextAnim3_r(a1, a2, a3);
@@ -435,18 +441,19 @@ HOOK(void, __fastcall, titanfightCheck_r, sig_TitanSSManage(), __int64 a1, __int
 	return originaltitanfightCheck_r(a1, a2, a3);
 }
 
-HOOK(size_t, __fastcall, CreateSonicContext_r, 0x14AE109B0, size_t* Sonk, __int64 a2)
+//updated
+HOOK(size_t, __fastcall, CreateSonicContext_r, 0x14AB3D5E0, size_t* Sonk, __int64 a2)
 {
 	isSuper = false;
 	isSS2 = false;
 	return originalCreateSonicContext_r(Sonk, a2);
 }
 
+//updated
 void SuperSonic::InitSS2()
 {
-	WRITE_NOP(0x14B754155, 0x2); //force pac file to always load
+	WRITE_NOP(0x14B543915, 0x2); //force pac file to always load
 }
-
 
 void SuperSonic::Init() 
 {
