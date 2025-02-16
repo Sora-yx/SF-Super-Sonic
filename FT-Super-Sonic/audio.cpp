@@ -160,31 +160,17 @@ void RestoreOriginalMusic()
 	}
 }
 
-//Those libraries are needed to load the VGMStream version of Bass, which allows a lot more format for music and make loop easier, this is a but overkill for a simple mod, but easy to use so.
-const char* BassDlls[] =
-{
-	"libatrac9.dll",
-	"libcelt-0061.dll",
-	"libcelt-0110.dll",
-	"libg719_decode.dll",
-	"libmpg123-0.dll",
-	"libspeex-1.dll",
-	"libvorbis.dll",
-	"avutil-vgmstream-57.dll",
-	"avcodec-vgmstream-59.dll",
-	"avformat-vgmstream-59.dll",
-	"swresample-vgmstream-4.dll",
-	"bass_vgmstream.dll"
-};
 
 void Init_Music()
 {
 	if (useSSMusic)
 	{
-		std::string Path = modPath + "/bass/";
-		std::string dll = Path + "bass.dll";
+		std::string Path = modPath + "bass\\";
+		std::string dll = Path + "bass_vgmstream.dll";
+		bool bassDLL = false;
 
-		HMODULE bassDLL = LoadLibraryA(dll.c_str());
+		bassDLL = LoadLibraryExA(dll.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+
 		if (bassDLL)
 		{
 			INSTALL_HOOK(PlayBGM_r);
@@ -194,13 +180,6 @@ void Init_Music()
 			{
 				BASS_Set3DFactors(0.1f, 0.1f, 0.0f);
 				BASS_SetConfig(BASS_CONFIG_3DALGORITHM, BASS_3DALG_FULL);
-
-				for (int i = 0; i < LengthOfArray(BassDlls); i++)
-				{
-					dll = Path + BassDlls[i];
-					LoadLibraryA(dll.c_str());
-				}
-
 				PrintInfo("Bass library loaded!\n");
 			}
 
