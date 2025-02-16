@@ -13,7 +13,7 @@ CL_SCAN_SIGNATURE
 CL_SCAN_SIGNATURE
 (
 	sigGetRings,
-	0x1408AAE30,
+	0x1408AC170,
 	"\x48\x8B\x41\x30\x8B\x40\x28", 
 	"xxxxxxx"
 )
@@ -54,11 +54,11 @@ CL_SCAN_SIGNATURE
 	"xxxxxxxxxxx????xxx"
 )
 
-
+//updated
 CL_SCAN_SIGNATURE
 (
 	sigsub_SSEFfectAura,
-	0x14AC1C9E0,
+	0x14ABFE6A0,
 	"\x40\x53\x48\x83\xEC\x20\x48\x89\xCB\xE8\xCC\xCC\xCC\xCC\x48\x8D\x05\xCC\xCC\xCC\xCC\x48\x8D\x4B\x48", 
 	"xxxxxxxxxx????xxx????xxxx"
 )
@@ -81,21 +81,22 @@ CL_SCAN_SIGNATURE
 	"xxxxxxx"
 );
 
+//updated
 CL_SCAN_SIGNATURE
 (
 	sigSetNewMsg,
-	0x1529923A0,
+	0x1525038D0,
 	"\x48\x8D\x05\xCC\xCC\xCC\xCC\x89\x51\x08\x48\x89\x01\x31", 
 	"xxx????xxxxxxx"
 )
 
-CL_SCAN_SIGNATURE
+/**CL_SCAN_SIGNATURE
 (
 	sigGetCurIsland_,
 	0x140260500,
 	"\xE8\xCC\xCC\xCC\xCC\x83\xF8\x05\x75\x34", 
 	"x????xxxxx"
-)
+)*/
 
 CL_SCAN_SIGNATURE
 (

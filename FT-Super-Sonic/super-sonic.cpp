@@ -440,7 +440,7 @@ HOOK(void, __fastcall, titanfightCheck_r, sig_TitanSSManage(), __int64 a1, __int
 }
 
 //updated
-HOOK(size_t, __fastcall, CreateSonicContext_r, 0x14AB3D5E0, size_t* Sonk, __int64 a2)
+HOOK(size_t, __fastcall, CreateSonicContext_r, 0x14AB28430, size_t* Sonk, __int64 a2)
 {
 	isSuper = false;
 	isSS2 = false;
@@ -450,7 +450,7 @@ HOOK(size_t, __fastcall, CreateSonicContext_r, 0x14AB3D5E0, size_t* Sonk, __int6
 //updated
 void SuperSonic::InitSS2()
 {
-	WRITE_NOP(0x14B543915, 0x2); //force pac file to always load
+	WRITE_NOP(0x14B416A3D, 0x2); //force pac file to always load
 }
 
 void SuperSonic::Init() 

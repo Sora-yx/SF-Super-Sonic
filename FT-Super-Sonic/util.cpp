@@ -88,20 +88,20 @@ HOOK(GameModeStagePlay*, __fastcall, GameStatePlayAllocator_r, 0x1401F1060, Game
 }
 
 //updated
-HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x14741B4B0, __int64 a1)
+HOOK(__int64, __fastcall, CyberSpacePlayStateAllocator_r, 0x1401B5E90, __int64 a1)
 {
 	TriggerInGame();
 	return  originalCyberSpacePlayStateAllocator_r(a1);
 }
 
-//updated
+
 HOOK(__int64, __fastcall, CyberStageChallengePlayState_Allocator_r, 0x1401BBE90, __int64 a1)
 {
 	TriggerInGame();
 	return originalCyberStageChallengePlayState_Allocator_r(a1);
 }
 
-//updated
+
 HOOK(__int64, __fastcall, MasterTrialPlayState_Allocator_r, 0x1401E02A0, __int64 a1)
 {
 	TriggerInGame();

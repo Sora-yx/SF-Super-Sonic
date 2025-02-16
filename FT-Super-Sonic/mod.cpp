@@ -40,6 +40,8 @@ extern "C" {
 		SuperSonic::Init();
 		Init_Music();
 		Init_Util(); //miscellaneous stuff to get current island, play state etc...
+
+		//WRITE_NOP(0x140967E03, 0x5);
 	}
 
 	__declspec(dllexport) void OnFrame()
