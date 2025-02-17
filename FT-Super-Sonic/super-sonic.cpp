@@ -60,12 +60,12 @@ void DisablePerfectParry(SonicContext* SContext)
 
 void SuperSonic::TransfoSS2(SonicContext* SContext)
 {	
-	auto pPlayer = PlayerHsmContextGetPlayer((long long*)SContext);
+	auto sceneData = SceneParametersGetSceneData((long long*)SContext);
 	auto pPlayerVisualGocStaticClass = GOCPlayerVisualGetStaticClass();
 
-	if (pPlayer && pPlayerVisualGocStaticClass)
+	if (sceneData && pPlayerVisualGocStaticClass)
 	{
-		auto pPlayerVisualGoc = GameObjectGetGoc(pPlayer, (__int64)pPlayerVisualGocStaticClass);
+		auto pPlayerVisualGoc = GameObjectGetGoc(sceneData, (__int64)pPlayerVisualGocStaticClass);
 
 		auto pVisualSuperSonic = GOCPlayerVisualGetVisualByHashName(
 			pPlayerVisualGoc,
@@ -90,7 +90,7 @@ void SuperSonic::UntransfoSS2(SonicContext* SContext)
 	if (!isSS2)
 		return;
 
-	auto pPlayer = PlayerHsmContextGetPlayer((long long*)SContext);
+	auto pPlayer = SceneParametersGetSceneData((long long*)SContext);
 	auto pPlayerVisualGocSaticClass = GOCPlayerVisualGetStaticClass();
 
 	if (pPlayer && pPlayerVisualGocSaticClass)

@@ -133,7 +133,7 @@ static FUNCTION_PTR(char, __fastcall, ChangeStateParameter, 0x1408ABE70, SonicCo
 static FUNCTION_PTR(__int64, __fastcall, SSAuraDestructor, sigsub_SSAuraDestructor(), SSEffAuraS* a1);
 static FUNCTION_PTR(__int64, __fastcall, SetNewMSG, sigSetNewMsg(), __int64* a1, int a2);
 
-static FUNCTION_PTR(__int64, __fastcall, PlayerHsmContextGetPlayer, 0x1402484E0, __int64* a1);
+static FUNCTION_PTR(__int64, __fastcall, SceneParametersGetSceneData, 0x1402484E0, __int64* a1);
 static FUNCTION_PTR(void*, __cdecl, GOCPlayerVisualGetStaticClass, 0x1408BC3E0); 
 static FUNCTION_PTR(__int64, __fastcall, GameObjectGetGoc, 0x140D35EB0, __int64 a1, __int64 a2); 
 static FUNCTION_PTR(__int64, __fastcall, GOCPlayerVisualGetVisualByHashName, 0x1408BB880, __int64 a1, int a2); 
@@ -150,4 +150,4 @@ static FUNCTION_PTR(signed __int64, __fastcall, DisableWorldFlags, 0x1409CC060, 
 #define DataArray(type, name, address, length) \
     static type *const name = (type *)address; static const int name##_Length = length
 
-DataArray(char, pVisualSuperSonicHash, 0x143CDC8F8, 5); 
+DataArray(char, pVisualSuperSonicHash, 0x143CDCC68, 5);
